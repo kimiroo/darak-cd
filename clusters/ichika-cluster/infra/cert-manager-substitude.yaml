@@ -7,9 +7,11 @@ spec:
   interval: 30s
   path: ./clusters/ichika-cluster/infra/cert-manager
   prune: true
+  wait: true
   sourceRef:
     kind: GitRepository
     name: flux-system
+    namespace: flux-system
   postBuild:
     substituteFrom:
       - kind: Secret
