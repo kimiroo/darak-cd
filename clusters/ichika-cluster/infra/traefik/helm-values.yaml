@@ -73,7 +73,6 @@ service:
   loadBalancerSourceRanges: []
   externalIPs: []
 
-logs:
-  general:
-    level: "WARN"
-    noColor: false
+log:
+  level: "WARN"
+  noColor: false
