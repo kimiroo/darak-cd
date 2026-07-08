@@ -4,7 +4,7 @@ metadata:
   name: cert-manager-substitude
   namespace: cert-manager
 spec:
-  interval: 30s
+  interval: 10m
   path: ./clusters/ichika-cluster/infra/cert-manager
   prune: true
   wait: true
