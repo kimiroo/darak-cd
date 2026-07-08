@@ -1,0 +1,79 @@
+additionalArguments:
+  - "--log.level=ERROR"
+  - "--serversTransport.insecureSkipVerify=true"
+  - "--providers.kubernetesingress.allowemptyservices=true"
+  - "--providers.kubernetesingress.allowexternalnameservices=true"
+  - "--providers.kubernetescrd.allowemptyservices=true"
+  - "--providers.kubernetescrd.allowexternalnameservices=true"
+  - "--entryPoints.web.proxyProtocol.insecure"
+  - "--entryPoints.websecure.proxyProtocol.insecure"
+
+deployment:
+  enabled: true
+  replicas: 3
+  annotations: {}
+  podAnnotations: {}
+  additionalContainers: []
+  initContainers: []
+
+ports:
+  web:
+    port: 80
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
+  websecure:
+    port: 443
+    http:
+      tls: {}
+    http3:
+      enabled: true
+      advertisedPort: 443
+    forwardedHeaders:
+      trustedIPs:
+        - 10.42.0.0/16
+
+ingressRoute:
+  dashboard:
+    enabled: false
+
+ingressClass:
+  enabled: true
+  isDefaultClass: true
+  name: traefik-external
+
+providers:
+  kubernetesCRD:
+    enabled: true
+    ingressClass: traefik-external
+    allowExternalNameServices: true
+  kubernetesIngress:
+    enabled: true
+    allowExternalNameServices: true
+    publishedService:
+      enabled: false
+
+api:
+  dashboard: false
+
+rbac:
+  enabled: true
+
+service:
+  enabled: true
+  type: LoadBalancer
+  annotations: {}
+  labels: {}
+  spec:
+    loadBalancerIP: 10.5.248.100 # this should be an IP in the MetalLB range
+    externalTrafficPolicy: Local
+  loadBalancerSourceRanges: []
+  externalIPs: []
+
+logs:
+  general:
+    level: "WARN"
+    noColor: false
