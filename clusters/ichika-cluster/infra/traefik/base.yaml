@@ -1,15 +1,15 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: cert-manager-base
-  namespace: cert-manager
+  name: traefik-base
+  namespace: traefik
 spec:
   interval: 10m
-  path: ./clusters/ichika-cluster/infra/cert-manager/base
+  path: ./clusters/ichika-cluster/infra/traefik/base
   prune: true
   wait: true
   dependsOn:
-    - name: cert-manager-namespace
+    - name: traefik-namespace
   sourceRef:
     kind: GitRepository
     name: flux-system
