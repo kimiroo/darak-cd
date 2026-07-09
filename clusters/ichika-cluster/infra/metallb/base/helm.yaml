@@ -1,9 +1,9 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: traefik
-  namespace: traefik
+  name: metallb
+  namespace: metallb-system
 spec:
   valuesFrom:
     - kind: ConfigMap
-      name: traefik-helm-values
+      name: metallb-helm-values
