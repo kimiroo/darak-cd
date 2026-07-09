@@ -3,5 +3,7 @@ kind: Kustomization
 resources:
   - cert-manager
   - traefik
+  - metallb-base
+  - metallb-config
   - cert-manager-substitude.yaml
   - cert-manager-issuer.yaml
