@@ -1,14 +1,13 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: cert-manager-issuer
-  namespace: cert-manager
+  name: cert-manager-base
+  namespace: flux-system
 spec:
   interval: 10m
-  path: ./clusters/ichika-cluster/infra/cert-manager/issuer
+  path: ./clusters/ichika-cluster/infra/cert-manager/base
   prune: true
-  dependsOn:
-    - name: cert-manager-substitude
+  wait: true
   sourceRef:
     kind: GitRepository
     name: flux-system

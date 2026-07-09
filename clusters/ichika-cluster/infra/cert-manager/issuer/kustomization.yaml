@@ -6,7 +6,7 @@ resources:
   - ../../../../../infra/cert-manager/issuer
 
 patches:
-  - path: patch-issuer.yaml
+  - path: issuer.yaml
   - patch: |
       $patch: delete
       apiVersion: cert-manager.io/v1
