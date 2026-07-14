@@ -3,4 +3,4 @@ kind: Kustomization
 
 resources:
   - networking.yaml
-  - workload.yaml
+  - apps.yaml

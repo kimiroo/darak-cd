@@ -5,7 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 10m
-  path: ./clusters/ichika-cluster/apps/darak/production/networking
+  path: ./domain/darak/production/networking
   prune: true
   dependsOn:
     - name: envoy-gateway-networking
