@@ -1,13 +1,15 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: metallb-namespace
+  name: envoy-gateway-resources
   namespace: flux-system
 spec:
   interval: 10m
-  path: ./infra/metallb/namespace
+  path: ./infra/envoy-gateway/resources
   prune: true
-  wait: true
+  wait: false
+  dependsOn:
+    - name: envoy-gateway-operator
   sourceRef:
     kind: GitRepository
     name: flux-system

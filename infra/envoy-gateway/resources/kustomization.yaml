@@ -3,4 +3,5 @@ kind: Kustomization
 namespace: networking
 
 resources:
-  - 00-gateway-class.yaml
+  - 00-envoy-proxy.yaml
+  - 01-gateway-class.yaml

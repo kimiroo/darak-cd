@@ -1,14 +1,13 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: metallb-config
+  name: cert-manager-operator
   namespace: flux-system
 spec:
   interval: 10m
-  path: ./infra/metallb/config
+  path: ./infra/cert-manager/operator
   prune: true
-  dependsOn:
-    - name: metallb-base
+  wait: true
   sourceRef:
     kind: GitRepository
     name: flux-system

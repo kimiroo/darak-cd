@@ -7,9 +7,8 @@ spec:
   interval: 10m
   path: ./domain/darak/production/apps
   prune: true
-  #dependsOn:
-  #  - name: envoy-gateway-networking
-  #  - name: cert-manager-issuer
+  dependsOn:
+    - name: darak-prod-namespace
   sourceRef:
     kind: GitRepository
     name: flux-system

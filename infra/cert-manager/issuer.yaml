@@ -8,7 +8,7 @@ spec:
   path: ./infra/cert-manager/issuer
   prune: true
   dependsOn:
-    - name: cert-manager-base
+    - name: cert-manager-operator
   sourceRef:
     kind: GitRepository
     name: flux-system

@@ -2,10 +2,11 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: GatewayClass
 metadata:
   name: envoy-gateway
+  namespace: networking
 spec:
   controllerName: gateway.envoyproxy.io/gatewayclass-controller
   parametersRef:
     group: gateway.envoyproxy.io
     kind: EnvoyProxy
     name: global-envoy-config
-    namespace: envoy-gateway-system
+    namespace: networking

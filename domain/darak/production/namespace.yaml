@@ -1,8 +1,13 @@
-apiVersion: v1
-kind: Namespace
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
 metadata:
-  name: darak-prod
-  labels:
-    ichika.io/domain: darak
-    ichika.io/env: prod
-    ichika.io/app:
+  name: darak-prod-namespace
+  namespace: flux-system
+spec:
+  interval: 10m
+  path: ./domain/darak/production/namespace
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
