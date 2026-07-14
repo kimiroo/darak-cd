@@ -1,0 +1,17 @@
+# Controller configuration
+config:
+  envoyGateway:
+    logging:
+      level:
+        default: warn
+
+# Resource limits for the controller
+deployment:
+  envoyGateway:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
