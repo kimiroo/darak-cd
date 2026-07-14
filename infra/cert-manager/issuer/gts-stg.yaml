@@ -5,14 +5,14 @@ metadata:
 spec:
   acme:
     server: https://dv.acme-v02.test-api.pki.goog/directory
-    email: ${acme_email}
+    email: ${acme_email_stg}
     privateKeySecretRef:
-      name: gts-acme-account
+      name: gts-acme-account-stg
     externalAccountBinding:
-      keyID: ${gts_key_id}
+      keyID: ${gts_key_id_stg}
       keySecretRef:
         name: cert-manager
-        key: gts_eab_secret
+        key: gts_eab_secret_stg
     #preferredChain: "R3"
     solvers:
     - dns01:
