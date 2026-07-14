@@ -4,6 +4,7 @@ metadata:
   name: global-envoy-config
   namespace: envoy-gateway-system
 spec:
+  mergeGateways: true
   provider:
     type: Kubernetes
     kubernetes:

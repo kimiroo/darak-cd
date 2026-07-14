@@ -4,4 +4,3 @@ namespace: networking
 
 resources:
   - 00-gateway-class.yaml
-  - 01-gateway.yaml
