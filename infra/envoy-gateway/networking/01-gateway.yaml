@@ -2,7 +2,6 @@ apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
   name: ichika-gateway
-  namespace: default
 spec:
   gatewayClassName: envoy-gateway
   listeners:
