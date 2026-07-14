@@ -1,0 +1,16 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: envoy-gateway-base
+  namespace: flux-system
+spec:
+  interval: 10m
+  path: ./infra/envoy-gateway/base
+  prune: true
+  wait: true
+  dependsOn:
+    - name: envoy-gateway-namespace
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system

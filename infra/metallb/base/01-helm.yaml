@@ -13,3 +13,6 @@ spec:
         kind: HelmRepository
         name: metallb
         namespace: metallb-system
+  valuesFrom:
+    - kind: ConfigMap
+      name: metallb-helm-values
