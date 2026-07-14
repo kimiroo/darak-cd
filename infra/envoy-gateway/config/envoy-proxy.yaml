@@ -12,3 +12,6 @@ spec:
       envoyPDB:
         minAvailable: 2
         # maxUnavailable: 1
+      envoyService:
+        annotations:
+          metallb.io/loadBalancerIPs: "10.5.49.100"

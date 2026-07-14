@@ -4,9 +4,6 @@ metadata:
   name: ichika-gateway
 spec:
   gatewayClassName: envoy-gateway
-  addresses:
-    - type: IPAddress
-      value: 10.5.49.100
   listeners:
     # Darak Homelab (Production)
     - name: darak-prod
