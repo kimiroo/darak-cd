@@ -1,12 +1,16 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: darak-prod-namespace
+  name: darak-prod-networking
   namespace: flux-system
 spec:
   interval: 10m
-  path: ./domain/darak/production/namespace
+  path: ./apps/darak/production/networking
   prune: true
+  dependsOn:
+    - name: envoy-gateway-resources
+    - name: cert-manager-issuer
+    - name: darak-prod-namespace
   sourceRef:
     kind: GitRepository
     name: flux-system
