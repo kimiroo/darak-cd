@@ -3,6 +3,6 @@ kind: Namespace
 metadata:
   name: darak-prod
   labels:
-    ichika.io/domain: darak
-    ichika.io/env: prod
-    ichika.io/app:
+    darak.dev/domain: darak
+    darak.dev/env: prod
+    darak.dev/app:

@@ -80,8 +80,8 @@ flux bootstrap github \
   --components-extra image-reflector-controller,image-automation-controller \
   --token-auth \
   --owner=kimiroo \
-  --repository=ichika-cd \
+  --repository=darak-cd \
   --branch=master \
-  --path=clusters/ichika-cluster \
+  --path=clusters/darak-cluster \
   --personal
 ```
