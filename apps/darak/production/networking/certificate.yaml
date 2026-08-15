@@ -8,10 +8,10 @@ spec:
   issuerRef:
     name: gts-prod
     kind: ClusterIssuer
-  commonName: 'darak.cc'
+  commonName: 'darak.dev'
   dnsNames:
-    - 'darak.cc'
-    - '*.darak.cc'
+    - 'darak.dev'
+    - '*.darak.dev'
   privateKey:
     algorithm: ECDSA
     size: 384

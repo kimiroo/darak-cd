@@ -8,7 +8,7 @@ spec:
   - name: prod-gateway
     namespace: darak-prod
   hostnames:
-  - "test.darak.cc"
+  - "test.darak.dev"
   rules:
   - matches:
     - path:

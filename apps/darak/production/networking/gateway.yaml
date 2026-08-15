@@ -7,7 +7,7 @@ spec:
   listeners:
     # Darak Homelab (Production)
     - name: darak-prod
-      hostname: "*.darak.cc"
+      hostname: "*.darak.dev"
       protocol: HTTPS
       port: 443
       allowedRoutes:
