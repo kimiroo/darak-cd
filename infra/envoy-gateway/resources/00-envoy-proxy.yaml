@@ -14,5 +14,10 @@ spec:
         minAvailable: 2
         # maxUnavailable: 1
       envoyService:
-        annotations:
-          metallb.io/loadBalancerIPs: "10.5.49.100"
+        type: LoadBalancer
+        externalTrafficPolicy: Local
+        patch:
+          type: StrategicMerge
+          value:
+            spec:
+              loadBalancerIP: "10.45.10.100"
