@@ -6,7 +6,7 @@ metadata:
 spec:
   secretName: darak-prod-cert-tls
   issuerRef:
-    name: gts-prod
+    name: gts-stg
     kind: ClusterIssuer
   commonName: 'darak.dev'
   dnsNames:
