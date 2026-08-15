@@ -11,7 +11,7 @@ spec:
     externalAccountBinding:
       keyID: ${gts_key_id_stg}
       keySecretRef:
-        name: cert-manager
+        name: gts-secrets
         key: gts_eab_secret_stg
     #preferredChain: "R3"
     solvers:
