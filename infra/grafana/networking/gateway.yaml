@@ -1,0 +1,19 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: grafana-gateway
+spec:
+  gatewayClassName: envoy-gateway
+  listeners:
+    # Grafana (Internal)
+    - name: grafana
+      hostname: "grafana.k3s.internal.darak.dev"
+      protocol: HTTPS
+      port: 443
+      allowedRoutes:
+        namespaces:
+          from: Same
+      tls:
+        certificateRefs:
+          - name: grafana-cert-cert-tls
+            namespace: grafana

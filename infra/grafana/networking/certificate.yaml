@@ -1,0 +1,16 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: grafana-cert
+  namespace: grafana
+spec:
+  secretName: grafana-cert-cert-tls
+  issuerRef:
+    name: gts-stg
+    kind: ClusterIssuer
+  commonName: 'grafana.k3s.internal.darak.dev'
+  dnsNames:
+    - 'grafana.k3s.internal.darak.dev'
+  privateKey:
+    algorithm: ECDSA
+    size: 384
