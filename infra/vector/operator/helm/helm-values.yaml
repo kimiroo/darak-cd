@@ -1,0 +1,84 @@
+# Agent role = DaemonSet + kubernetes_logs; RBAC is auto-created by the chart.
+# No inbound ports needed for Agent role — without this, the chart tries to
+# create a Service with an empty ports list, which k8s rejects.
+service:
+  enabled: false
+serviceHeadless:
+  enabled: false
+
+role: Agent
+
+# rocky-master-01/02/03 have a control-plane taint — this lets Vector
+# schedule on them anyway so all 6 nodes get covered.
+tolerations:
+  - operator: Exists
+
+# Share the node's network namespace, same as calico-node. This lets us reach
+# Felix at localhost instead of needing to interpolate the node IP into config
+# (avoids needing --dangerously-allow-env-var-interpolation entirely).
+podHostNetwork: true
+# Required with hostNetwork, otherwise cluster-internal DNS names (the other
+# scrape targets below) stop resolving.
+dnsPolicy: ClusterFirstWithHostNet
+
+customConfig:
+  data_dir: /vector-data-dir
+  api:
+    enabled: false
+
+  sources:
+    kubernetes_logs:
+      type: kubernetes_logs
+
+    calico_metrics:
+      type: prometheus_scrape
+      endpoints:
+        - "http://localhost:9091/metrics"
+      scrape_interval_secs: 30
+
+    # Singleton component, existing Service works fine
+    calico_kube_controllers_metrics:
+      type: prometheus_scrape
+      endpoints:
+        - "http://calico-kube-controllers-metrics.calico-system.svc:9094/metrics"
+      scrape_interval_secs: 30
+
+    # All 3 components expose metrics on 9402
+    certmanager_metrics:
+      type: prometheus_scrape
+      endpoints:
+        - "http://cert-manager.cert-manager.svc:9402/metrics"
+        - "http://cert-manager-cainjector.cert-manager.svc:9402/metrics"
+        - "http://cert-manager-webhook.cert-manager.svc:9402/metrics"
+      scrape_interval_secs: 30
+
+    # Control plane metrics only; proxy/dataplane stats need a separate
+    # EnvoyProxy CRD setup, out of scope for now
+    envoygateway_metrics:
+      type: prometheus_scrape
+      endpoints:
+        - "http://envoy-gateway.envoy-gateway-system.svc:19001/metrics"
+      scrape_interval_secs: 30
+
+  sinks:
+    victoriametrics:
+      type: prometheus_remote_write
+      inputs:
+        - calico_metrics
+        - calico_kube_controllers_metrics
+        - certmanager_metrics
+        - envoygateway_metrics
+      endpoint: "https://metrics.o11y.internal.darak.dev/api/v1/write"
+
+    victorialogs:
+      type: elasticsearch
+      inputs:
+        - kubernetes_logs
+      endpoints:
+        - "https://logs.o11y.internal.darak.dev/insert/elasticsearch/"
+      mode: bulk
+      api_version: v8
+      query:
+        _msg_field: message
+        _time_field: timestamp
+        _stream_fields: "kubernetes.pod_namespace,kubernetes.pod_name,kubernetes.container_name"
