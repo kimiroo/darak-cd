@@ -6,7 +6,7 @@ metadata:
 spec:
   secretName: grafana-cert-cert-tls
   issuerRef:
-    name: gts-stg
+    name: gts-prod
     kind: ClusterIssuer
   commonName: 'grafana.k3s.internal.darak.dev'
   dnsNames:
