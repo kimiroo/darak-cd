@@ -1,0 +1,27 @@
+# Grafana's own alerting stays off — vmalert + Alertmanager own alerting,
+# Grafana here is visualization only.
+grafana.ini:
+  unified_alerting:
+    enabled: false
+  alerting:
+    enabled: false
+  plugins:
+    allow_loading_unsigned_plugins: victoriametrics-logs-datasource
+
+plugins:
+  - victoriametrics-logs-datasource
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: VictoriaMetrics
+        type: prometheus
+        access: proxy
+        url: https://metrics.o11y.internal.darak.dev
+        isDefault: true
+
+      - name: VictoriaLogs
+        type: victoriametrics-logs-datasource
+        access: proxy
+        url: https://logs.o11y.internal.darak.dev
