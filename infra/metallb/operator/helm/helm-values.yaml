@@ -1,0 +1,9 @@
+# speaker must run on every node (masters included) — otherwise the same
+# advertised-vs-actual-backend mismatch as the envoy-gateway incident can happen here too
+speaker:
+  tolerations:
+    - operator: Exists
+
+controller:
+  tolerations:
+    - operator: Exists

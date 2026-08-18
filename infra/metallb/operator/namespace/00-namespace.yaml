@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: metallb-system
+  labels:
+    # speaker runs with hostNetwork — needs privileged PSA on all three levels,
+    # not just enforce, or audit/warn logs still fire against cluster defaults
+    pod-security.kubernetes.io/enforce: privileged
+    pod-security.kubernetes.io/audit: privileged
+    pod-security.kubernetes.io/warn: privileged

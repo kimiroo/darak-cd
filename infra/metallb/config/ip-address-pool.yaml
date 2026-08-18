@@ -1,0 +1,9 @@
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: k3s-lb-pool
+  namespace: metallb-system
+spec:
+  addresses:
+    - 10.45.10.0/24
+    - fdab:d9c3:fb50:45:10::/80

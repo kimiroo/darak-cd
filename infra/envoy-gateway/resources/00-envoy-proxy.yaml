@@ -20,4 +20,4 @@ spec:
           value:
             metadata:
               annotations:
-                projectcalico.org/loadBalancerIPs: '["10.45.10.100", "fdab:d9c3:fb50:45:10::100"]'
+                metallb.io/loadBalancerIPs: '10.45.10.100,fdab:d9c3:fb50:45:10::100'

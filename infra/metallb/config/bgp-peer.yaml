@@ -1,0 +1,19 @@
+apiVersion: metallb.io/v1beta2
+kind: BGPPeer
+metadata:
+  name: vyos-router-v4
+  namespace: metallb-system
+spec:
+  myASN: 64513
+  peerASN: 64512
+  peerAddress: 10.10.0.1
+---
+apiVersion: metallb.io/v1beta2
+kind: BGPPeer
+metadata:
+  name: vyos-router-v6
+  namespace: metallb-system
+spec:
+  myASN: 64513
+  peerASN: 64512
+  peerAddress: fdab:d9c3:fb50:10::1
