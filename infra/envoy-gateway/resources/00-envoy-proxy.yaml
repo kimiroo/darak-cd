@@ -21,3 +21,8 @@ spec:
             metadata:
               annotations:
                 metallb.io/loadBalancerIPs: '10.45.10.100,fdab:d9c3:fb50:45:10::100'
+            spec:
+              ipFamilyPolicy: RequireDualStack
+              ipFamilies:
+                - IPv4
+                - IPv6
