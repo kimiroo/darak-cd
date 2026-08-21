@@ -1,0 +1,8 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - 00-default-deny.yaml
+  - 01-allow-envoy-ingress.yaml
+  - 02-allow-intra-namespace.yaml
+  - 03-allow-dns-egress.yaml
