@@ -6,3 +6,5 @@ metadata:
     darak.dev/domain: onhouse
     darak.dev/env: prod
     darak.dev/app:
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted

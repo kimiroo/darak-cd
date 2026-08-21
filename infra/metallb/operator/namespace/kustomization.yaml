@@ -4,3 +4,4 @@ namespace: metallb-system
 
 resources:
   - 00-namespace.yaml
+  - 01-limitrange.yaml
