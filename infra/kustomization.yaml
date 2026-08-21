@@ -7,5 +7,6 @@ resources:
   - envoy-gateway
   - grafana
   - metallb
+  - network-policy
   - vector
   - vmalert

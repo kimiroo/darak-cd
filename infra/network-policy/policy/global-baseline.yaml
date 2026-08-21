@@ -1,0 +1,45 @@
+# Applies only to namespaces labeled darak.dev/tier=app. Infra namespaces
+# (vector, metallb-system, calico-system, etc.) are deliberately excluded —
+# they run privileged/hostNetwork workloads and locking them down needs
+# individual, careful review. Tracked as separate future work.
+#
+# Intra-namespace allow is NOT here on purpose. GlobalNetworkPolicy can't
+# express "same namespace as the destination pod" across multiple selected
+# namespaces — writing that naively (e.g. a bare `all()` source selector)
+# would let darak-prod and onhouse-prod talk to each other, which is a real
+# cross-tenant leak (see projectcalico/calico#6107 for the exact same
+# problem reported upstream). Intra-namespace traffic stays the
+# responsibility of each namespace's own k8s NetworkPolicy, and that one
+# file still needs to be added per new app namespace — this baseline only
+# removes the need to duplicate the Envoy-ingress and DNS-egress rules.
+#
+# selector syntax below has not been validated on a live cluster yet —
+# confirm with calicoctl/kubectl after first deploy that it matches the
+# intended namespaces before relying on it.
+apiVersion: crd.projectcalico.org/v1
+kind: GlobalNetworkPolicy
+metadata:
+  name: default-baseline-app-namespaces
+spec:
+  namespaceSelector: darak.dev/tier == 'app'
+  types:
+    - Ingress
+    - Egress
+  ingress:
+    - action: Allow
+      protocol: TCP
+      source:
+        namespaceSelector: kubernetes.io/metadata.name == "envoy-gateway-system"
+  egress:
+    - action: Allow
+      protocol: UDP
+      destination:
+        namespaceSelector: kubernetes.io/metadata.name == "kube-system"
+        ports:
+          - 53
+    - action: Allow
+      protocol: TCP
+      destination:
+        namespaceSelector: kubernetes.io/metadata.name == "kube-system"
+        ports:
+          - 53
