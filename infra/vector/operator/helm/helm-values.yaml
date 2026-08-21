@@ -93,6 +93,27 @@ customConfig:
         - "http://envoy-gateway.envoy-gateway-system.svc:19001/metrics"
       scrape_interval_secs: 30
 
+    # Authentik Server/Worker
+    authentik_metrics:
+      type: prometheus_scrape
+      endpoints:
+        - "http://authentik-server.authentik.svc:9300/metrics"
+      scrape_interval_secs: 30
+
+    # CloudNativePG Operator
+    cnpg_operator_metrics:
+      type: prometheus_scrape
+      endpoints:
+        - "http://cnpg-cloudnative-pg.cnpg-system.svc:8080/metrics"
+      scrape_interval_secs: 30
+
+    # Authentik PostgreSQL Cluster (CNPG)
+    authentik_postgres_metrics:
+      type: prometheus_scrape
+      endpoints:
+        - "http://authentik-postgres-rw.authentik.svc:9187/metrics"
+      scrape_interval_secs: 30
+
   sinks:
     victoriametrics:
       type: prometheus_remote_write
@@ -103,6 +124,9 @@ customConfig:
         - kube_state_metrics
         - kubelet_metrics
         - envoygateway_metrics
+        - authentik_metrics
+        - cnpg_operator_metrics
+        - authentik_postgres_metrics
       endpoint: "https://metrics.o11y.internal.darak.dev/api/v1/write"
 
     victorialogs:

@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
   - alertmanager
+  - authentik
   - cert-manager
   - cloudnative-pg
   - envoy-gateway

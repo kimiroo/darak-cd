@@ -1,0 +1,38 @@
+authentik:
+  error_reporting:
+    enabled: false
+  existingSecret:
+    secretName: authentik-secret
+
+server:
+  route:
+    main:
+      enabled: true
+      hostnames:
+        - auth.darak.dev
+      parentRefs:
+        - name: envoy-gateway
+          namespace: networking
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "256Mi"
+    limits:
+      cpu: "1000m"
+      memory: "1Gi"
+
+worker:
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "256Mi"
+    limits:
+      cpu: "1000m"
+      memory: "1Gi"
+
+postgresql:
+  enabled: false
+
+prometheus:
+  rules:
+    enabled: false
