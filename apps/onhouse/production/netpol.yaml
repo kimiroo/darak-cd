@@ -1,0 +1,16 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: onhouse-prod-netpol
+  namespace: flux-system
+spec:
+  interval: 10m
+  path: ./apps/onhouse/production/netpol
+  prune: true
+  wait: true
+  dependsOn:
+    - name: onhouse-prod-namespace
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system

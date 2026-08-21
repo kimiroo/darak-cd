@@ -1,0 +1,14 @@
+# Not enforcing egress here intentionally — to avoid slowing down development when
+# integrating with services like Supabase (no fixed IP), Cloudflare, or notification
+# services (Firebase, etc.). When switching to CNPG (when fixed in-cluster targets
+# are available), we can tighten the policy. By not including Egress in policyTypes,
+# it's equivalent to having no egress NetworkPolicy at all — the default k8s behavior
+# (unrestricted) applies.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
