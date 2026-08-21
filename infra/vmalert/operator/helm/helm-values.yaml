@@ -1,0 +1,44 @@
+alertmanager:
+  enabled: false
+
+server:
+  datasource:
+    url: https://metrics.o11y.internal.darak.dev
+  notifier:
+    url: http://alertmanager.alertmanager.svc:9093
+
+  config:
+    alerts:
+      groups:
+        - name: certificates
+          rules:
+            - alert: CertificateExpiringSoon
+              expr: (certmanager_certificate_expiration_timestamp_seconds - time()) < 14 * 24 * 3600
+              for: 1h
+              labels:
+                severity: warning
+              annotations:
+                summary: "Certificate {{ $labels.name }} ({{ $labels.namespace }}) expiring soon"
+                description: "Less than 14 days remaining before expiry."
+
+        # No data source for these alerts yet, so they are commented out for now.
+        #
+        # - name: storage
+        #   rules:
+        #     - alert: PVCUsageHigh
+        #       expr: (kubelet_volume_stats_used_bytes / kubelet_volume_stats_capacity_bytes) > 0.85
+        #       for: 15m
+        #       labels:
+        #         severity: warning
+        #       annotations:
+        #         summary: "PVC {{ $labels.persistentvolumeclaim }} ({{ $labels.namespace }}) over 85% full"
+        #
+        # - name: pod-health
+        #   rules:
+        #     - alert: PodCrashLooping
+        #       expr: increase(kube_pod_container_status_restarts_total[15m]) > 3
+        #       for: 5m
+        #       labels:
+        #         severity: warning
+        #       annotations:
+        #         summary: "Pod {{ $labels.pod }} ({{ $labels.namespace }}) restarting repeatedly"
