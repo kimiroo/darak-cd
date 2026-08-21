@@ -6,6 +6,9 @@ server:
     url: https://metrics.o11y.internal.darak.dev
   notifier:
     url: http://alertmanager.alertmanager.svc:9093
+  extraArgs:
+    configCheckInterval: "30s"
+
 
   config:
     alerts:
@@ -21,6 +24,16 @@ server:
                 summary: "Certificate {{ $labels.name }} ({{ $labels.namespace }}) expiring soon"
                 description: "Less than 14 days remaining before expiry."
 
+        - name: pod-health
+          rules:
+            - alert: PodCrashLooping
+              expr: increase(kube_pod_container_status_restarts_total[15m]) > 3
+              for: 5m
+              labels:
+                severity: warning
+              annotations:
+                summary: "Pod {{ $labels.pod }} ({{ $labels.namespace }}) restarting repeatedly"
+
         # No data source for these alerts yet, so they are commented out for now.
         #
         # - name: storage
@@ -33,12 +46,3 @@ server:
         #       annotations:
         #         summary: "PVC {{ $labels.persistentvolumeclaim }} ({{ $labels.namespace }}) over 85% full"
         #
-        # - name: pod-health
-        #   rules:
-        #     - alert: PodCrashLooping
-        #       expr: increase(kube_pod_container_status_restarts_total[15m]) > 3
-        #       for: 5m
-        #       labels:
-        #         severity: warning
-        #       annotations:
-        #         summary: "Pod {{ $labels.pod }} ({{ $labels.namespace }}) restarting repeatedly"
