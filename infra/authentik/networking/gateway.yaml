@@ -1,14 +1,14 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
-  name: grafana-gateway
-  namespace: grafana
+  name: authentik-gateway
+  namespace: authentik
 spec:
   gatewayClassName: envoy-gateway
   listeners:
-    # Grafana (Internal)
-    - name: grafana
-      hostname: "grafana.k3s.internal.darak.dev"
+    # Authentik (Internal)
+    - name: authentik
+      hostname: "auth.darak.dev"
       protocol: HTTPS
       port: 443
       allowedRoutes:
@@ -16,5 +16,5 @@ spec:
           from: Same
       tls:
         certificateRefs:
-          - name: grafana-cert-tls
-            namespace: grafana
+          - name: authentik-cert-tls
+            namespace: authentik

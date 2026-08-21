@@ -7,7 +7,7 @@ authentik:
 server:
   route:
     main:
-      enabled: true
+      enabled: false
       hostnames:
         - auth.darak.dev
       parentRefs:

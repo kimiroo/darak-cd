@@ -10,5 +10,6 @@ resources:
   - grafana
   - metallb
   - network-policy
+  - networking
   - vector
   - vmalert

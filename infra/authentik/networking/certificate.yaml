@@ -1,16 +1,16 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: grafana-cert
-  namespace: grafana
+  name: authentik-cert
+  namespace: authentik
 spec:
-  secretName: grafana-cert-tls
+  secretName: authentik-cert-tls
   issuerRef:
     name: gts-prod
     kind: ClusterIssuer
-  commonName: 'grafana.k3s.internal.darak.dev'
+  commonName: 'auth.darak.dev'
   dnsNames:
-    - 'grafana.k3s.internal.darak.dev'
+    - 'auth.darak.dev'
   privateKey:
     algorithm: ECDSA
     size: 384

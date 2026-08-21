@@ -1,11 +1,11 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: grafana-networking
+  name: authentik-networking
   namespace: flux-system
 spec:
   interval: 10m
-  path: ./infra/grafana/networking
+  path: ./infra/authentik/networking
   prune: true
   dependsOn:
     - name: networking-resources
