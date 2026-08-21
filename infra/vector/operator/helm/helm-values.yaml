@@ -26,6 +26,14 @@ customConfig:
   api:
     enabled: false
 
+  # SA tokens rotate — read via secret backend instead of a static string so
+  # renewals get picked up (same reasoning as dropping env var interpolation)
+  secret:
+    kubelet-token:
+      type: directory
+      path: /var/run/secrets/kubernetes.io/serviceaccount
+      remove_trailing_whitespace: true
+
   sources:
     kubernetes_logs:
       type: kubernetes_logs
@@ -59,6 +67,24 @@ customConfig:
         - "http://kube-state-metrics.kube-state-metrics.svc:8080/metrics"
       scrape_interval_secs: 30
 
+    # Per-node like Felix — hostNetwork+localhost, each pod only scrapes its
+    # own node's kubelet.
+    # /metrics/cadvisor: per-container CPU/memory usage
+    # /metrics: kubelet_volume_stats_* (PVC usage) and the rest
+    # Skipping cert verification — loopback traffic, no MITM risk, and
+    # kubelet's serving cert is often self-signed anyway
+    kubelet_metrics:
+      type: prometheus_scrape
+      endpoints:
+        - "https://localhost:10250/metrics/cadvisor"
+        - "https://localhost:10250/metrics"
+      auth:
+        strategy: bearer
+        token: SECRET[kubelet-token.token]
+      tls:
+        verify_certificate: false
+      scrape_interval_secs: 30
+
     # Control plane metrics only; proxy/dataplane stats need a separate
     # EnvoyProxy CRD setup, out of scope for now
     envoygateway_metrics:
@@ -75,6 +101,7 @@ customConfig:
         - calico_kube_controllers_metrics
         - certmanager_metrics
         - kube_state_metrics
+        - kubelet_metrics
         - envoygateway_metrics
       endpoint: "https://metrics.o11y.internal.darak.dev/api/v1/write"
 
