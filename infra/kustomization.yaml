@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - alertmanager
   - cert-manager
+  - cloudnative-pg
   - envoy-gateway
   - grafana
   - metallb
