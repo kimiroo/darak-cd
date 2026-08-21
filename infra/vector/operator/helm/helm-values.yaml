@@ -52,6 +52,13 @@ customConfig:
         - "http://cert-manager-webhook.cert-manager.svc:9402/metrics"
       scrape_interval_secs: 30
 
+    # Singleton component, default port 8080, no auth
+    kube_state_metrics:
+      type: prometheus_scrape
+      endpoints:
+        - "http://kube-state-metrics.kube-state-metrics.svc:8080/metrics"
+      scrape_interval_secs: 30
+
     # Control plane metrics only; proxy/dataplane stats need a separate
     # EnvoyProxy CRD setup, out of scope for now
     envoygateway_metrics:
@@ -67,6 +74,7 @@ customConfig:
         - calico_metrics
         - calico_kube_controllers_metrics
         - certmanager_metrics
+        - kube_state_metrics
         - envoygateway_metrics
       endpoint: "https://metrics.o11y.internal.darak.dev/api/v1/write"
 

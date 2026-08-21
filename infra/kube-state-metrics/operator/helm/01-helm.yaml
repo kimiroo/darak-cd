@@ -1,0 +1,17 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kube-state-metrics
+  namespace: kube-state-metrics
+spec:
+  interval: 10m
+  chartRef:
+    kind: OCIRepository
+    name: kube-state-metrics
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+      remediateLastFailure: true
