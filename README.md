@@ -1,3 +1,10 @@
+### Pre-commit
+```bash
+pip install pre-commit
+pre-commit install
+pre-commit run --all-files # To scan through all existing files
+```
+
 ### Restore Kubernetes etcd
 
 #### 1. Stop K3s services
