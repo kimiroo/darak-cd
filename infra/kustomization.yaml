@@ -11,5 +11,6 @@ resources:
   - metallb
   - network-policy
   - networking
+  - step-ca
   - vector
   - vmalert

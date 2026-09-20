@@ -1,0 +1,112 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: step-ca-backend
+  namespace: step-ca
+  labels:
+    app.kubernetes.io/name: step-ca
+    app.kubernetes.io/instance: step-ca-backend
+spec:
+  # Must stay at 1: step-ca's badger DB does not support concurrent writers
+  replicas: 1
+  serviceName: step-ca-backend
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: step-ca
+      app.kubernetes.io/instance: step-ca-backend
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: step-ca
+        app.kubernetes.io/instance: step-ca-backend
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: step-ca
+          image: smallstep/step-ca:0.30.2
+          command:
+            - /usr/local/bin/step-ca
+          args:
+            - /home/step/config/ca.json
+            - --password-file=/home/step/secrets/password
+          ports:
+            - name: https
+              containerPort: 9000
+              protocol: TCP
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              cpu: "25m"
+              memory: "64Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+          startupProbe:
+            httpGet:
+              path: /health
+              port: https
+              scheme: HTTPS
+            periodSeconds: 5
+            failureThreshold: 12
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: https
+              scheme: HTTPS
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: https
+              scheme: HTTPS
+            periodSeconds: 30
+          volumeMounts:
+            - name: config
+              mountPath: /home/step/config
+              readOnly: true
+            - name: certs
+              mountPath: /home/step/certs
+              readOnly: true
+            - name: secrets
+              mountPath: /home/step/secrets
+              readOnly: true
+            - name: db
+              mountPath: /home/step/db
+      volumes:
+        - name: config
+          configMap:
+            name: step-ca-backend-ca-json
+        - name: certs
+          configMap:
+            name: step-ca-backend-certs
+        # Provided by the secrets repo (SOPS), not created here.
+        # ca_key is exposed as intermediate_ca_key to match ca.json "key".
+        - name: secrets
+          secret:
+            secretName: intermediate-backend
+            defaultMode: 0440
+            items:
+              - key: password
+                path: password
+              - key: ca_key
+                path: intermediate_ca_key
+  volumeClaimTemplates:
+    - metadata:
+        name: db
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: local-path
+        resources:
+          requests:
+            storage: 5Gi

@@ -1,0 +1,23 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: step-ca-gateway
+  namespace: step-ca
+spec:
+  gatewayClassName: envoy-gateway
+  listeners:
+    # step-ca Backend (TLS Passthrough)
+    # Envoy must NOT terminate TLS here: `step ca renew` authenticates with
+    # the client certificate, which only reaches step-ca if the TLS session
+    # is passed through untouched.
+    - name: step-ca-backend
+      hostname: "step-ca-backend.k3s.internal.darak.dev"
+      protocol: TLS
+      port: 443
+      allowedRoutes:
+        namespaces:
+          from: Same
+        kinds:
+          - kind: TLSRoute
+      tls:
+        mode: Passthrough
