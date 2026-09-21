@@ -5,7 +5,7 @@ metadata:
   namespace: darak-prod
 spec:
   parentRefs:
-  - name: prod-gateway
+  - name: darak-prod
     namespace: darak-prod
   hostnames:
   - "test.darak.dev"

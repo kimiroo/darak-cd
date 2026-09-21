@@ -1,0 +1,15 @@
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: ClientTrafficPolicy
+metadata:
+  name: darak-prod-mtls
+  namespace: darak-prod
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: darak-prod-mtls
+  tls:
+    clientValidation:
+      caCertificateRefs:
+        - kind: ConfigMap
+          name: darak-prod-mtls-client-ca

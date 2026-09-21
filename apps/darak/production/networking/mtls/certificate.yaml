@@ -1,0 +1,16 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: darak-prod-mtls-cert
+  namespace: darak-prod
+spec:
+  secretName: darak-prod-mtls-cert-tls
+  issuerRef:
+    name: gts-prod
+    kind: ClusterIssuer
+  commonName: 'home.darak.dev'
+  dnsNames:
+    - 'home.darak.dev'
+  privateKey:
+    algorithm: ECDSA
+    size: 384

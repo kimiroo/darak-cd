@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: darak-prod
+
+resources:
+  - certificate.yaml
+  - gateway.yaml
+  - http-route.yaml
+  - client-traffic-policy.yaml
+
+configMapGenerator:
+  - name: darak-prod-mtls-client-ca
+    files:
+      - ca.crt
+
+configurations:
+  - kustomizeconfig.yaml

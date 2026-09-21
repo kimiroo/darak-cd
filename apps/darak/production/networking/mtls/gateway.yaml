@@ -1,0 +1,19 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: darak-prod-mtls
+spec:
+  gatewayClassName: envoy-gateway
+  listeners:
+    # Home Assistant (Production, client certificate required)
+    - name: darak-prod-mtls
+      hostname: "home.darak.dev"
+      protocol: HTTPS
+      port: 443
+      allowedRoutes:
+        namespaces:
+          from: Same
+      tls:
+        certificateRefs:
+          - name: darak-prod-mtls-cert-tls
+            namespace: darak-prod
