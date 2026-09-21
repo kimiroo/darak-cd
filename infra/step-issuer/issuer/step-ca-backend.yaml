@@ -1,0 +1,16 @@
+apiVersion: certmanager.step.sm/v1beta1
+kind: StepClusterIssuer
+metadata:
+  name: step-ca-backend
+spec:
+  url: https://step-ca-backend.step-ca.svc.cluster.local:9000
+  # base64 of infra/step-ca/operator/backend/root_ca.crt (public certificate)
+  caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUJzVENDQVRlZ0F3SUJBZ0lSQU5Ub1B2SU5sTFNYVnB4b2hpZ09xNHN3Q2dZSUtvWkl6ajBFQXdNd0dERVcKTUJRR0ExVUVBeE1OUkdGeVlXc2dVbTl2ZENCRFFUQWVGdzB5TmpBNU1EUXdOVFE0TXpWYUZ3MHpOakE1TURFdwpOVFE0TXpWYU1CZ3hGakFVQmdOVkJBTVREVVJoY21GcklGSnZiM1FnUTBFd2RqQVFCZ2NxaGtqT1BRSUJCZ1VyCmdRUUFJZ05pQUFUb2w5VFlzYyt3MUV1STkralZidGx4V3FJV2RGazhqY2greVFIdHFZN2lQdVF6SjZwcFl5bUsKSjA5ZXJmUkFqSmk1L01XOGs5TWJnRG1nS1VFakVtcVY5US9xOXFtWXFFK2NUUS9CRDFuWHhUZHZOSC9PRXhodApWS09pWGdqNUdwNmpSVEJETUE0R0ExVWREd0VCL3dRRUF3SUJCakFTQmdOVkhSTUJBZjhFQ0RBR0FRSC9BZ0VCCk1CMEdBMVVkRGdRV0JCVDVkR1FwMzhTVVVWYTRnNndqWWpXeklNaWtiREFLQmdncWhrak9QUVFEQXdOb0FEQmwKQWpFQXUwb3lySG51NHRTODZwUDJRVlZWTmRSYTRnamVwU2VHcHIyMEVyUnV0UHNCSXZudWYrb09GSWJGSlB2cQpST3dMQWpBTGZBdjdZc21vZGF0MEFZb0loUGJPWEZ1N2RUY0FQK1IyUUxsTEFwVGpDNU01NzBNUzU2eHRJNENLCklQR25mWnc9Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+  provisioner:
+    name: step-issuer-backend
+    kid: jK13Slk8CGk7chfvEq7FMbwOfFQ7Zndz78Yx02LBtRw
+    passwordRef:
+      # Provided through darak-cd-secrets (SOPS), not in this repository.
+      name: backend-provisioner
+      namespace: step-issuer
+      key: password

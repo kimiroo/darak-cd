@@ -12,5 +12,6 @@ resources:
   - network-policy
   - networking
   - step-ca
+  - step-issuer
   - vector
   - vmalert

@@ -1,0 +1,25 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: step-issuer
+  namespace: step-issuer
+spec:
+  interval: 10m
+  chart:
+    spec:
+      chart: step-issuer
+      version: ">=0.9.0"
+      sourceRef:
+        kind: HelmRepository
+        name: smallstep
+        namespace: step-issuer
+  install:
+    crds: CreateReplace
+  upgrade:
+    crds: CreateReplace
+  values:
+    # cr.step.sm is unreachable from the nodes, use the Docker Hub mirror.
+    image:
+      repository: smallstep/step-issuer
+    serviceAccount:
+      create: true
