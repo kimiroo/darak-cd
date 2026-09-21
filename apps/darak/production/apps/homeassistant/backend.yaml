@@ -8,6 +8,9 @@ spec:
     - fqdn:
         hostname: homeassistant.rocky-docker-01.internal.darak.dev
         port: 443
+  # Force HTTP/1.1 on upstream
+  appProtocols:
+    - gateway.envoyproxy.io/wss
   tls:
     sni: homeassistant.rocky-docker-01.internal.darak.dev
     # Server certificate is a generic GTS one, so it is not verified here.
