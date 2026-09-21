@@ -4,6 +4,9 @@ config:
     logging:
       level:
         default: warn
+    # Needed for the Backend resource (FQDN endpoints outside the cluster).
+    extensionApis:
+      enableBackend: true
 
 # Resource limits for the controller
 deployment:

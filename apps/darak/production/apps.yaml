@@ -8,6 +8,9 @@ spec:
   path: ./apps/darak/production/apps
   prune: true
   dependsOn:
+    - name: envoy-gateway-operator
+    - name: cert-manager-issuer
+    - name: step-issuer-issuer
     - name: darak-prod-namespace
   sourceRef:
     kind: GitRepository

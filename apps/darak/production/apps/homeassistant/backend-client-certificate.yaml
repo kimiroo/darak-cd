@@ -1,0 +1,24 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: darak-prod-mtls-backend-client
+  namespace: darak-prod
+spec:
+  secretName: darak-prod-mtls-backend-client-tls
+  issuerRef:
+    group: certmanager.step.sm
+    kind: StepClusterIssuer
+    name: step-ca-backend
+  commonName: 'darak-prod-mtls.envoy.darak.dev'
+  dnsNames:
+    - 'darak-prod-mtls.envoy.darak.dev'
+  usages:
+    - digital signature
+    - client auth
+  # step-ca backend provisioner caps leaf lifetime at 24h.
+  duration: 24h
+  renewBefore: 8h
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+    rotationPolicy: Always

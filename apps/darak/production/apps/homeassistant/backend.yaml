@@ -1,0 +1,17 @@
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: Backend
+metadata:
+  name: homeassistant
+  namespace: darak-prod
+spec:
+  endpoints:
+    - fqdn:
+        hostname: homeassistant.rocky-docker-01.internal.darak.dev
+        port: 443
+  tls:
+    sni: homeassistant.rocky-docker-01.internal.darak.dev
+    # Server certificate is a generic GTS one, so it is not verified here.
+    insecureSkipVerify: true
+    clientCertificateRef:
+      kind: Secret
+      name: darak-prod-mtls-backend-client-tls
