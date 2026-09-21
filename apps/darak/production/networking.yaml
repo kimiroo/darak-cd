@@ -10,6 +10,7 @@ spec:
   dependsOn:
     - name: networking-resources
     - name: cert-manager-issuer
+    - name: step-issuer-issuer
     - name: darak-prod-namespace
   sourceRef:
     kind: GitRepository

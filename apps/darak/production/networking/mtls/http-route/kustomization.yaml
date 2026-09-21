@@ -3,4 +3,4 @@ kind: Kustomization
 namespace: darak-prod
 
 resources:
-  - backend.yaml
+  - home.yaml

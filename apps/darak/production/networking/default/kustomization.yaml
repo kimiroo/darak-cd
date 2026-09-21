@@ -5,4 +5,4 @@ namespace: darak-prod
 resources:
   - certificate.yaml
   - gateway.yaml
-  - http-route.yaml
+  - http-route

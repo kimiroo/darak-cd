@@ -4,3 +4,4 @@ namespace: darak-prod
 
 resources:
   - homeassistant
+  - go2rtc

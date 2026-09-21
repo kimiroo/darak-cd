@@ -5,8 +5,9 @@ namespace: darak-prod
 resources:
   - certificate.yaml
   - gateway.yaml
-  - http-route.yaml
+  - backend-client-certificate.yaml
   - client-traffic-policy.yaml
+  - http-route
 
 configMapGenerator:
   - name: darak-prod-mtls-client-ca
