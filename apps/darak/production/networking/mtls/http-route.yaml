@@ -14,6 +14,11 @@ spec:
     - path:
         type: PathPrefix
         value: /
+    filters:
+    # Set SNI to Caddy's CN
+    - type: URLRewrite
+      urlRewrite:
+        hostname: homeassistant.rocky-docker-01.internal.darak.dev
     backendRefs:
     - group: gateway.envoyproxy.io
       kind: Backend
