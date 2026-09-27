@@ -3,6 +3,4 @@ kind: Kustomization
 namespace: darak-prod
 
 resources:
-  - homeassistant
-  - go2rtc
-  - ice-server
+  - backend.yaml

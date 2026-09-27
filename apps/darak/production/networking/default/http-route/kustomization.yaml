@@ -5,3 +5,4 @@ namespace: darak-prod
 resources:
   - test.yaml
   - go2rtc.yaml
+  - ice-server.yaml
