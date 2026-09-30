@@ -5,6 +5,22 @@ pre-commit install
 pre-commit run --all-files # To scan through all existing files
 ```
 
+### Frontend mTLS certificate
+```bash
+# 1. port-forward
+kubectl port-forward -n step-ca svc/step-ca-frontend 9000:9000
+
+# 2. Issue certificate bundle
+step ca certificate <CN> client.crt client.key \
+  --ca-url https://localhost:9000 \
+  --root infra/step-ca/operator/frontend/root_ca.crt \
+  --provisioner step-issuer-frontend \
+  --not-after 8760h
+
+# 3. Export to PKCS#12 certificate
+step certificate p12 client.p12 client.crt client.key
+```
+
 ### Restore Kubernetes etcd
 
 #### 1. Stop K3s services
