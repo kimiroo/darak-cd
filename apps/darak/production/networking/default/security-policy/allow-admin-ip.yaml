@@ -1,0 +1,25 @@
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: allow-admin-ip
+  namespace: darak-prod
+spec:
+  targetRefs:
+  - group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: darak-prod-go2rtc
+  - group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: darak-prod-ice-server
+  authorization:
+    # Deny everything not matched by an Allow rule below
+    defaultAction: Deny
+    rules:
+    - name: allow-trusted-cidrs
+      action: Allow
+      principal:
+        clientCIDRs:
+        - 10.20.0.0/16
+        - fdab:d9c3:fb50:20::/64
+        - 10.7.10.0/24
+        - fdab:d9c3:fb50:7:10::/80

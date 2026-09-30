@@ -3,7 +3,4 @@ kind: Kustomization
 namespace: darak-prod
 
 resources:
-  - certificate.yaml
-  - gateway.yaml
-  - http-route
-  - security-policy
+  - allow-admin-ip.yaml
