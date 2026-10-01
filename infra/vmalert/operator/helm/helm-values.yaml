@@ -15,14 +15,34 @@ server:
       groups:
         - name: certificates
           rules:
+            # Short-lived certs (24h, rotated daily by step-ca) are always inside
+            # the 14d window, so they're excluded here and only alert on expiry
             - alert: CertificateExpiringSoon
-              expr: (certmanager_certificate_expiration_timestamp_seconds - time()) < 14 * 24 * 3600
+              expr: (certmanager_certificate_expiration_timestamp_seconds{name!~".*-backend-client"} - time()) < 14 * 24 * 3600
               for: 1h
               labels:
                 severity: warning
               annotations:
                 summary: "Certificate {{ $labels.name }} ({{ $labels.namespace }}) expiring soon"
                 description: "Less than 14 days remaining before expiry."
+
+            - alert: CertificateExpired
+              expr: (certmanager_certificate_expiration_timestamp_seconds - time()) < 0
+              for: 5m
+              labels:
+                severity: critical
+              annotations:
+                summary: "Certificate {{ $labels.name }} ({{ $labels.namespace }}) expired"
+                description: "Certificate has expired; renewal is failing."
+
+            - alert: CertificateNotReady
+              expr: certmanager_certificate_ready_status{condition="False"} == 1
+              for: 15m
+              labels:
+                severity: warning
+              annotations:
+                summary: "Certificate {{ $labels.name }} ({{ $labels.namespace }}) not ready"
+                description: "Certificate is not Ready (issuance failing or expired)."
 
         - name: pod-health
           rules:
