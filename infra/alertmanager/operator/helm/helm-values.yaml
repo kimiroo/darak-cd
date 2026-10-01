@@ -26,5 +26,5 @@ config:
           username: 'Alertmanager'
           icon_url: https://kimiroo.github.io/assets-public/icons/slack/prometheus.png
           send_resolved: true
-          title: '{{ .CommonAnnotations.summary }}'
+          title: '[{{ .Status | toUpper }}] {{ .CommonAnnotations.summary }}'
           text: '{{ .CommonAnnotations.description }}'
