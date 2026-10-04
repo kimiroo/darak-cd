@@ -10,8 +10,10 @@ eap {
         # cert-manager's tls.crt is leaf + intermediates, which is what supplicants need
         certificate_file = /etc/freeradius/certs/tls.crt
 
-        # Trust anchor for CLIENT certificates: the dedicated Wi-Fi root and nothing else.
-        # Anything not issued by it (including the mTLS CAs of this cluster) fails the handshake.
+        # Trust anchors for CLIENT certificates: the dedicated Wi-Fi root and its intermediate, nothing else.
+        # Device certificates are signed by the intermediate, so the intermediate must be in this file
+        # (a root-only file fails with "unable to get local issuer certificate").
+        # Anything not issued by them (including the mTLS CAs of this cluster) fails the handshake.
         ca_file = /etc/freeradius/wifi-ca/ca.crt
 
         tls_min_version = "1.2"
