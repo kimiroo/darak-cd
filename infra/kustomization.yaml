@@ -8,6 +8,7 @@ resources:
   - cloudflare-ddns
   - cloudnative-pg
   - envoy-gateway
+  - freeradius
   - grafana
   - metallb
   - network-policy

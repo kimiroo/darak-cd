@@ -1,0 +1,19 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: freeradius-operator
+  namespace: flux-system
+spec:
+  interval: 10m
+  path: ./infra/freeradius/operator
+  prune: true
+  wait: true
+  dependsOn:
+    - name: authentik-operator
+    - name: cert-manager-issuer
+    - name: metallb-config
+    - name: reloader-operator
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
