@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: step-ca-wifi
+  namespace: step-ca-wifi
+  labels:
+    app.kubernetes.io/name: step-ca
+    app.kubernetes.io/instance: step-ca-wifi
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: step-ca
+    app.kubernetes.io/instance: step-ca-wifi
+  ports:
+    - name: https
+      port: 9000
+      targetPort: https
+      protocol: TCP

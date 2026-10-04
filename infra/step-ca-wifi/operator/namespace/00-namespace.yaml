@@ -1,0 +1,10 @@
+# The Wi-Fi CA lives alone in its namespace so that its intermediate key is not readable
+# through the Secret rights anyone has in the step-ca namespace.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: step-ca-wifi
+  labels:
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted

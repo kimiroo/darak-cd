@@ -15,6 +15,7 @@ resources:
   - networking
   - reloader
   - step-ca
+  - step-ca-wifi
   - step-issuer
   - vector
   - vmalert

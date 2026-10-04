@@ -1,0 +1,11 @@
+# Nothing talks to the CA over the pod network. Certificates are issued by an admin through
+# `kubectl port-forward`, which does not go through the pod network policy.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
