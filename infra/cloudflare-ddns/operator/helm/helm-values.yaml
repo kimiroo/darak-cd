@@ -5,7 +5,7 @@ cloudflare:
   existingSecret: cloudflare-api-key
   existingSecretKey: token
 
-domains: "home.darak.dev"
+domains: "auth.darak.dev,home.darak.dev"
 ip4Domains: ""
 ip6Domains: ""
 
