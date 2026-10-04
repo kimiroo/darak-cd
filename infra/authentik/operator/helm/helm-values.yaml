@@ -36,3 +36,7 @@ postgresql:
 prometheus:
   rules:
     enabled: false
+
+blueprints:
+  configMaps:
+    - authentik-blueprint-radius

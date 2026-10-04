@@ -1,0 +1,12 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: wifi
+  namespace: authentik
+spec:
+  cluster:
+    name: authentik-postgres
+  name: wifi
+  owner: wifi
+  # Never drop the device list just because this manifest was removed
+  databaseReclaimPolicy: retain

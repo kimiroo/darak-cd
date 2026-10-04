@@ -1,0 +1,25 @@
+# Only used for the device registry lookup (wifi_check) in inner-tunnel.
+# TLS to the database is enabled with PGSSLMODE in the Deployment (libpq env).
+sql {
+    driver = "rlm_sql_postgresql"
+    dialect = "postgresql"
+
+    server = "authentik-postgres-rw.authentik.svc"
+    port = 5432
+    login = "$ENV{WIFI_DB_USER}"
+    password = "$ENV{WIFI_DB_PASSWORD}"
+    radius_db = "wifi"
+
+    read_clients = no
+
+    pool {
+        start = 1
+        min = 1
+        max = 4
+        spare = 1
+        uses = 0
+        retry_delay = 5
+        lifetime = 0
+        idle_timeout = 300
+    }
+}

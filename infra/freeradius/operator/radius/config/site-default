@@ -18,6 +18,14 @@ server default {
     }
 
     post-auth {
+        if (&session-state:Tunnel-Private-Group-Id) {
+            update reply {
+                &Tunnel-Type := &session-state:Tunnel-Type
+                &Tunnel-Medium-Type := &session-state:Tunnel-Medium-Type
+                &Tunnel-Private-Group-Id := &session-state:Tunnel-Private-Group-Id
+            }
+        }
+
         Post-Auth-Type REJECT {
             attr_filter.access_reject
             eap

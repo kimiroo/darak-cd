@@ -4,3 +4,11 @@ namespace: authentik
 
 resources:
   - 00-cluster.yaml
+  - 01-wifi-roles.yaml
+  - 02-wifi-database.yaml
+  - 03-wifi-schema-job.yaml
+
+configMapGenerator:
+  - name: wifi-schema
+    files:
+      - wifi-schema.sql

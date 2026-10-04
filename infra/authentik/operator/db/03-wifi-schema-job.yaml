@@ -1,0 +1,69 @@
+# Applies wifi-schema.sql. Jobs are immutable and the ConfigMap name carries a
+# content hash, so editing the SQL fails this Job loudly: bump the number in the
+# name to run the new version.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: wifi-schema-1
+  namespace: authentik
+spec:
+  backoffLimit: 6
+  template:
+    spec:
+      restartPolicy: OnFailure
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 26
+        runAsGroup: 26
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: psql
+          image: ghcr.io/cloudnative-pg/postgresql:18.6-minimal-trixie
+          command:
+            - sh
+            - -c
+            - |
+              # The database and both roles are created by the CNPG operator, wait for them
+              until psql -tAc "select 1 from pg_roles where rolname = 'wifi_radius'" | grep -q 1; do
+                echo "waiting for database and roles..."; sleep 5
+              done
+              psql -v ON_ERROR_STOP=1 -f /sql/wifi-schema.sql
+          env:
+            - name: PGHOST
+              value: authentik-postgres-rw
+            - name: PGDATABASE
+              value: wifi
+            - name: PGSSLMODE
+              value: require
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: wifi-owner
+                  key: username
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: wifi-owner
+                  key: password
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              cpu: 250m
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: sql
+              mountPath: /sql
+              readOnly: true
+      volumes:
+        - name: sql
+          configMap:
+            name: wifi-schema

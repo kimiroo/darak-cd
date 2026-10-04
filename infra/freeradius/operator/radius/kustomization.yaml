@@ -15,5 +15,6 @@ configMapGenerator:
       - clients.conf=config/clients.conf
       - proxy.conf=config/proxy.conf
       - eap=config/eap
+      - sql=config/sql
       - default=config/site-default
       - inner-tunnel=config/site-inner-tunnel

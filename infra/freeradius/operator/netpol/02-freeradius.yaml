@@ -1,4 +1,5 @@
-# FreeRADIUS: reachable only from the OpenWrt APs (.10 and .20), talks only to the outpost.
+# FreeRADIUS: reachable only from the OpenWrt APs (.10 and .20), talks only to the
+# outpost and the device registry database.
 # Source IP is preserved because the Service uses externalTrafficPolicy: Local.
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -32,3 +33,14 @@ spec:
       ports:
         - protocol: UDP
           port: 1812
+    # Device registry (CNPG). All instances: the -rw Service follows the primary.
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: authentik
+          podSelector:
+            matchLabels:
+              cnpg.io/cluster: authentik-postgres
+      ports:
+        - protocol: TCP
+          port: 5432

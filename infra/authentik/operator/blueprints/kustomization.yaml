@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: authentik
+
+# Fixed name (no hash suffix): the chart references it by name in helm-values.yaml.
+# authentik re-applies a mounted blueprint when its content changes.
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+  - name: authentik-blueprint-radius
+    files:
+      - radius.yaml

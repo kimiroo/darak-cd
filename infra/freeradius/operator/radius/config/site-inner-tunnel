@@ -12,5 +12,35 @@ server inner-tunnel {
     }
 
     post-auth {
+        # Device registry. authentik has accepted the user at this point. Its reply
+        # carries the user uuid in Class; the device MAC comes from the AP's outer
+        # request. Never read the MAC from the inner request: that is supplied by
+        # the supplicant. Any missing or malformed value, or any database error,
+        # ends in a reject.
+        update request {
+            &Tmp-String-0 := "%{string:&reply:Class}"
+            &Tmp-String-1 := "%{outer.request:Calling-Station-Id}"
+        }
+
+        if (&Tmp-String-0 !~ /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i) {
+            reject
+        }
+        if (&Tmp-String-1 !~ /^([0-9a-f]{2}[-:.]?){5}[0-9a-f]{2}$/i) {
+            reject
+        }
+        if ("%{sql:SELECT wifi_check('%{Tmp-String-0}'::uuid, '%{Tmp-String-1}'::macaddr)}" != "t") {
+            reject
+        }
+
+        # Only the VLAN attributes authentik returns are carried to the outer
+        # Access-Accept (use_tunneled_reply stays off so nothing else leaks out).
+        # No attribute means no VLAN: the AP falls back to its default VLAN.
+        if (&reply:Tunnel-Private-Group-Id) {
+            update outer.session-state {
+                &Tunnel-Type := &reply:Tunnel-Type
+                &Tunnel-Medium-Type := &reply:Tunnel-Medium-Type
+                &Tunnel-Private-Group-Id := &reply:Tunnel-Private-Group-Id
+            }
+        }
     }
 }

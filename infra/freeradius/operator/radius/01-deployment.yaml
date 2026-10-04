@@ -4,7 +4,7 @@ metadata:
   name: freeradius
   annotations:
     # cert-manager renews the cert Secret in place; FreeRADIUS only reads it at start
-    secret.reloader.stakater.com/reload: freeradius-cert-tls,freeradius-secrets
+    secret.reloader.stakater.com/reload: freeradius-cert-tls,freeradius-secrets,freeradius-db
 spec:
   replicas: 1
   selector:
@@ -33,6 +33,18 @@ spec:
               containerPort: 1812
               protocol: UDP
           env:
+            - name: PGSSLMODE
+              value: require
+            - name: WIFI_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: freeradius-db
+                  key: username
+            - name: WIFI_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: freeradius-db
+                  key: password
             - name: OPENWRT_RADIUS_SECRET
               valueFrom:
                 secretKeyRef:
@@ -67,6 +79,10 @@ spec:
             - name: config
               mountPath: /etc/freeradius/mods-available/eap
               subPath: eap
+              readOnly: true
+            - name: config
+              mountPath: /etc/freeradius/mods-enabled/sql
+              subPath: sql
               readOnly: true
             - name: config
               mountPath: /etc/freeradius/sites-available/default
