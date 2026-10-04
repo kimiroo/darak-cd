@@ -18,3 +18,18 @@ spec:
   valuesFrom:
     - kind: ConfigMap
       name: cloudflare-ddns-helm-values
+  # internal.darak.dev (node search domain) answers NODATA for unknown names, which stops the
+  # app's resolver before it falls back to the absolute name. Only external names are queried here.
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: cloudflare-ddns
+            patch: |
+              - op: add
+                path: /spec/template/spec/dnsConfig
+                value:
+                  options:
+                    - name: ndots
+                      value: "1"

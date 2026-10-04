@@ -1,5 +1,5 @@
 replicaCount: 1
-hostNetwork: true
+hostNetwork: false
 
 cloudflare:
   existingSecret: cloudflare-api-key
