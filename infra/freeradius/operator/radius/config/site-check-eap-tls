@@ -65,7 +65,7 @@ server check-eap-tls {
             &Tunnel-Private-Group-Id := &control:Tmp-String-5
             # Forces a re-authentication: a revoked device or a disabled user is cut off within this
             # time. Longer than any outage you want to survive, shorter than you want to wait.
-            &Session-Timeout := 43200
+            &Session-Timeout := 3600
             &Termination-Action := RADIUS-Request
         }
 
