@@ -24,12 +24,30 @@ server default {
     }
 
     post-auth {
-        if (&session-state:Tunnel-Private-Group-Id) {
-            update reply {
-                &Tunnel-Type := &session-state:Tunnel-Type
-                &Tunnel-Medium-Type := &session-state:Tunnel-Medium-Type
-                &Tunnel-Private-Group-Id := &session-state:Tunnel-Private-Group-Id
-            }
+        # Device registry. This runs once authentik has accepted the user. The proxied
+        # reply carries the user uuid in Class, and the AP's own Calling-Station-Id is
+        # the device MAC (it comes from the outer request, never from the inner tunnel
+        # where the supplicant could write anything). Any missing or malformed value,
+        # or any database error, ends in a reject.
+        update request {
+            &Tmp-String-0 := "%{string:&reply:Class}"
+            &Tmp-String-1 := "%{Calling-Station-Id}"
+        }
+
+        if (&Tmp-String-0 !~ /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i) {
+            reject
+        }
+        if (&Tmp-String-1 !~ /^([0-9a-f]{2}[-:.]?){5}[0-9a-f]{2}$/i) {
+            reject
+        }
+        if ("%{sql:SELECT wifi_check('%{Tmp-String-0}'::uuid, '%{Tmp-String-1}'::macaddr)}" != "t") {
+            reject
+        }
+
+        # The uuid was only needed for the check above, the AP has no use for it.
+        # The VLAN attributes authentik returned stay in the reply as they are.
+        update reply {
+            &Class !* ANY
         }
 
         Post-Auth-Type REJECT {
