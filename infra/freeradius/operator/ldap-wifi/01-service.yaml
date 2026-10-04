@@ -1,0 +1,13 @@
+# Only LDAPS is exposed. The plain LDAP port (3389) of the outpost is not published here.
+apiVersion: v1
+kind: Service
+metadata:
+  name: authentik-ldap-wifi
+spec:
+  selector:
+    app.kubernetes.io/name: authentik-ldap-wifi
+  ports:
+    - name: ldaps
+      port: 6636
+      protocol: TCP
+      targetPort: ldaps

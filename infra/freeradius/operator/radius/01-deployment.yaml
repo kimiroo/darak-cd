@@ -4,7 +4,7 @@ metadata:
   name: freeradius
   annotations:
     # cert-manager renews the cert Secret in place; FreeRADIUS only reads it at start
-    secret.reloader.stakater.com/reload: freeradius-cert-tls,freeradius-secrets,freeradius-db
+    secret.reloader.stakater.com/reload: freeradius-cert-tls,freeradius-secrets,freeradius-db,freeradius-ldap-wifi-wifi
 spec:
   replicas: 1
   selector:
@@ -50,11 +50,11 @@ spec:
                 secretKeyRef:
                   name: freeradius-secrets
                   key: openwrt_secret
-            - name: AUTHENTIK_RADIUS_SECRET
+            - name: LDAP_BIND_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: freeradius-secrets
-                  key: authentik_secret
+                  name: freeradius-ldap-wifi
+                  key: password
           resources:
             requests:
               cpu: 25m
@@ -73,10 +73,6 @@ spec:
               subPath: clients.conf
               readOnly: true
             - name: config
-              mountPath: /etc/freeradius/proxy.conf
-              subPath: proxy.conf
-              readOnly: true
-            - name: config
               mountPath: /etc/freeradius/mods-available/eap
               subPath: eap
               readOnly: true
@@ -89,8 +85,18 @@ spec:
               subPath: default
               readOnly: true
             - name: config
-              mountPath: /etc/freeradius/sites-available/inner-tunnel
-              subPath: inner-tunnel
+              mountPath: /etc/freeradius/mods-enabled/ldap
+              subPath: ldap
+              readOnly: true
+            - name: config
+              mountPath: /etc/freeradius/sites-enabled/check-eap-tls
+              subPath: check-eap-tls
+              readOnly: true
+            - name: wifi-ca
+              mountPath: /etc/freeradius/wifi-ca
+              readOnly: true
+            - name: ldap-ca
+              mountPath: /etc/freeradius/ldap-ca
               readOnly: true
             - name: tls
               mountPath: /etc/freeradius/certs
@@ -105,6 +111,12 @@ spec:
         - name: config
           configMap:
             name: freeradius-config
+        - name: wifi-ca
+          configMap:
+            name: freeradius-wifi-ca
+        - name: ldap-ca
+          configMap:
+            name: freeradius-ldap-wifi-ca
         - name: tls
           secret:
             secretName: freeradius-cert-tls

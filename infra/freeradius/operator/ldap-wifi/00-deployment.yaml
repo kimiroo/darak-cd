@@ -1,20 +1,20 @@
-# Manually deployed outpost (not the authentik-managed Kubernetes integration),
-# so the whole thing stays in Git. Image tag must match the authentik server version.
+# authentik's LDAP outpost, deployed by hand (not through authentik's Kubernetes integration)
+# so everything stays in Git. The image tag must match the authentik server version.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: authentik-radius
+  name: authentik-ldap-wifi
   annotations:
-    secret.reloader.stakater.com/reload: authentik-radius-outpost
+    secret.reloader.stakater.com/reload: authentik-ldap-wifi-outpost
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: authentik-radius
+      app.kubernetes.io/name: authentik-ldap-wifi
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: authentik-radius
+        app.kubernetes.io/name: authentik-ldap-wifi
     spec:
       automountServiceAccountToken: false
       securityContext:
@@ -24,12 +24,12 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       containers:
-        - name: radius
-          image: ghcr.io/goauthentik/radius:2026.8.3
+        - name: ldap
+          image: ghcr.io/goauthentik/ldap:2026.8.3
           ports:
-            - name: radius
-              containerPort: 1812
-              protocol: UDP
+            - name: ldaps
+              containerPort: 6636
+              protocol: TCP
           env:
             - name: AUTHENTIK_HOST
               value: http://authentik-server.authentik.svc
@@ -38,7 +38,7 @@ spec:
             - name: AUTHENTIK_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: authentik-radius-outpost
+                  name: authentik-ldap-wifi-outpost
                   key: token
           resources:
             requests:

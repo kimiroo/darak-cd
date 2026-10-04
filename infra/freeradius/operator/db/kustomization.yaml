@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: wifi-db
+
+resources:
+  - 00-namespace.yaml
+  - 01-limitrange.yaml
+  - 02-cluster.yaml
+  - 03-schema-job.yaml
+
+# Hash suffix on purpose: editing the SQL changes the Job and fails it loudly, bump the Job name then.
+configMapGenerator:
+  - name: wifi-registry-schema
+    files:
+      - registry.sql

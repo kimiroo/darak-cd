@@ -4,7 +4,7 @@ sql {
     driver = "rlm_sql_postgresql"
     dialect = "postgresql"
 
-    server = "authentik-postgres-rw.authentik.svc"
+    server = "wifi-postgres-rw.wifi-db.svc"
     port = 5432
     login = "$ENV{WIFI_DB_USER}"
     password = "$ENV{WIFI_DB_PASSWORD}"

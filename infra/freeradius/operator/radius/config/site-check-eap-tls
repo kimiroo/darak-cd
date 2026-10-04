@@ -1,0 +1,81 @@
+server check-eap-tls {
+    authorize {
+        # 1. Which device is this? CN is the device uuid, the serial binds the exact certificate.
+        update request {
+            &Tmp-String-0 := "%{TLS-Client-Cert-Common-Name}"
+            &Tmp-String-1 := "%{TLS-Client-Cert-Serial}"
+        }
+        if (&Tmp-String-0 !~ /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i) {
+            reject
+        }
+        if (&Tmp-String-1 !~ /^[0-9a-f:]{2,80}$/i) {
+            reject
+        }
+
+        # 2. Registry: active device with that CN and serial -> the authentik user (uidNumber).
+        update control {
+            &Tmp-String-3 := "%{sql:SELECT wifi_cert_check('%{Tmp-String-0}'::uuid, '%{Tmp-String-1}')}"
+        }
+        if (&control:Tmp-String-3 !~ /^[0-9]+$/) {
+            reject
+        }
+        update control {
+            &Tmp-Integer-0 := &control:Tmp-String-3
+        }
+
+        # 3. LDAP: the user must exist and be active (found = ok/updated, anything else rejects).
+        ldap
+        if (!(ok || updated)) {
+            reject
+        }
+
+        # 4. Groups -> VLAN. Quarantine first, then the most privileged group.
+        update request {
+            &Tmp-String-4 := ","
+        }
+        foreach &control:Tmp-String-2 {
+            if ("%{Foreach-Variable-0}" =~ /^(?:cn|ou)=([^,]+),/) {
+                update request {
+                    &Tmp-String-4 := "%{Tmp-String-4}%{1},"
+                }
+            }
+        }
+        if (&Tmp-String-4 =~ /,Limbo,/) {
+            update control { &Tmp-String-5 := "99" }
+        }
+        elsif (&Tmp-String-4 =~ /,Admin,/) {
+            update control { &Tmp-String-5 := "20" }
+        }
+        elsif (&Tmp-String-4 =~ /,Family,/) {
+            update control { &Tmp-String-5 := "30" }
+        }
+        elsif (&Tmp-String-4 =~ /,Trusted Guest,/) {
+            update control { &Tmp-String-5 := "70" }
+        }
+        elsif (&Tmp-String-4 =~ /,Guest,/) {
+            update control { &Tmp-String-5 := "90" }
+        }
+        else {
+            # Authenticated and active, but in no mapped group: quarantine.
+            update control { &Tmp-String-5 := "99" }
+        }
+        update reply {
+            &Tunnel-Type := VLAN
+            &Tunnel-Medium-Type := IEEE-802
+            &Tunnel-Private-Group-Id := &control:Tmp-String-5
+            # Forces a re-authentication: a revoked device or a disabled user is cut off within this
+            # time. Longer than any outage you want to survive, shorter than you want to wait.
+            &Session-Timeout := 43200
+            &Termination-Action := RADIUS-Request
+        }
+
+        # Everything passed: only now record the sighting.
+        update control {
+            &Tmp-String-6 := "%{sql:SELECT wifi_cert_seen('%{Tmp-String-0}'::uuid)}"
+        }
+
+        update config {
+            &Auth-Type := Accept
+        }
+    }
+}

@@ -1,9 +1,11 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: freeradius
 
+# No namespace here on purpose: freeradius resources and the separate wifi-db cluster are
+# both rendered from this path and every child sets its own namespace.
 resources:
   - namespace
+  - db
   - netpol
-  - outpost
+  - ldap-wifi
   - radius

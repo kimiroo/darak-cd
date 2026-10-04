@@ -1,0 +1,48 @@
+# Read-only lookups against authentik's LDAP outpost: is the user active, which groups.
+ldap {
+    server = "ldaps://authentik-ldap-wifi.freeradius.svc:6636"
+    identity = "cn=ldap-wifi-search,ou=users,dc=ldap,dc=goauthentik,dc=io"
+    password = "$ENV{LDAP_BIND_PASSWORD}"
+    base_dn = "dc=ldap,dc=goauthentik,dc=io"
+
+    user {
+        base_dn = "dc=ldap,dc=goauthentik,dc=io"
+        # uidNumber comes from the registry row; the account must be active.
+        filter = "(&(uidNumber=%{control:Tmp-Integer-0})(ak-active=TRUE))"
+        scope = "sub"
+    }
+
+    # Every group of the user, as the raw memberOf DNs.
+    update {
+        control:Tmp-String-2 += 'memberOf'
+    }
+
+    options {
+        chase_referrals = no
+        rebind = no
+        res_timeout = 5
+        srv_timelimit = 3
+        net_timeout = 3
+        idle = 60
+        probes = 3
+        interval = 3
+    }
+
+    # The outpost serves a dedicated certificate (valid for 10 years) that is pinned here:
+    # the pinned certificate is the only trust anchor.
+    tls {
+        ca_file = /etc/freeradius/ldap-ca/ca.crt
+        require_cert = "demand"
+    }
+
+    pool {
+        start = 1
+        min = 1
+        max = 4
+        spare = 1
+        uses = 0
+        retry_delay = 5
+        lifetime = 0
+        idle_timeout = 60
+    }
+}

@@ -11,6 +11,7 @@ spec:
   # authentik-operator dependency removed to avoid a circular dependency
   dependsOn:
     - name: cert-manager-issuer
+    - name: cnpg-operator
     - name: metallb-config
     - name: reloader-operator
   sourceRef:

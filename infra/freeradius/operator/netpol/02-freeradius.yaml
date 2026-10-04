@@ -1,5 +1,5 @@
 # FreeRADIUS: reachable only from the OpenWrt APs (.10 and .20), talks only to the
-# outpost and the device registry database.
+# LDAP outpost (LDAPS) and the device registry database.
 # Source IP is preserved because the Service uses externalTrafficPolicy: Local.
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -26,21 +26,22 @@ spec:
         - protocol: UDP
           port: 1812
   egress:
+    # authentik's LDAP outpost, same namespace
     - to:
         - podSelector:
             matchLabels:
-              app.kubernetes.io/name: authentik-radius
+              app.kubernetes.io/name: authentik-ldap-wifi
       ports:
-        - protocol: UDP
-          port: 1812
-    # Device registry (CNPG). All instances: the -rw Service follows the primary.
+        - protocol: TCP
+          port: 6636
+    # Device registry: its own CNPG cluster. All instances, the -rw Service follows the primary.
     - to:
         - namespaceSelector:
             matchLabels:
-              kubernetes.io/metadata.name: authentik
+              kubernetes.io/metadata.name: wifi-db
           podSelector:
             matchLabels:
-              cnpg.io/cluster: authentik-postgres
+              cnpg.io/cluster: wifi-postgres
       ports:
         - protocol: TCP
           port: 5432

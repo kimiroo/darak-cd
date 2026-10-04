@@ -6,4 +6,4 @@ resources:
   - 00-default-deny.yaml
   - 01-allow-dns-egress.yaml
   - 02-freeradius.yaml
-  - 03-outpost.yaml
+  - 03-ldap-wifi.yaml

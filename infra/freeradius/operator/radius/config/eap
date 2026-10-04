@@ -1,25 +1,29 @@
 eap {
-    default_eap_type = ttls
+    default_eap_type = tls
     timer_expire = 60
     ignore_unknown_eap_types = no
     max_sessions = 4096
 
     tls-config tls-common {
+        # What the devices verify: the public (GTS) certificate for radius.darak.dev.
         private_key_file = /etc/freeradius/certs/tls.key
         # cert-manager's tls.crt is leaf + intermediates, which is what supplicants need
         certificate_file = /etc/freeradius/certs/tls.crt
+
+        # Trust anchor for CLIENT certificates: the dedicated Wi-Fi root and nothing else.
+        # Anything not issued by it (including the mTLS CAs of this cluster) fails the handshake.
+        ca_file = /etc/freeradius/wifi-ca/ca.crt
+
         tls_min_version = "1.2"
         tls_max_version = "1.2"
+
+        # The certificate CN must equal the EAP identity the device announced.
+        check_cert_cn = %{User-Name}
     }
 
-    ttls {
+    tls {
         tls = tls-common
-        default_eap_type = md5
-        copy_request_to_tunnel = no
-        # The proxied reply of authentik carries the user uuid (Class) and the VLAN
-        # (Tunnel-*). The registry check in the default server's post-auth and the AP's
-        # VLAN assignment need them in the outer reply, which this copies them to.
-        use_tunneled_reply = yes
-        virtual_server = "inner-tunnel"
+        # Runs once, just before the final Accept: registry, LDAP and VLAN.
+        virtual_server = check-eap-tls
     }
 }

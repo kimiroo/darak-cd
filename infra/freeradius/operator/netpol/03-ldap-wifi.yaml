@@ -1,14 +1,13 @@
-# authentik RADIUS outpost: reachable only from FreeRADIUS, talks only to the
-# authentik server (API + websocket). Nothing else, so an escaped pod has no
-# route to the rest of the cluster.
+# LDAP outpost: reachable only from FreeRADIUS, talks only to the authentik server (API and
+# websocket). Nothing else, so an escaped pod has no route elsewhere in the cluster.
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: authentik-radius
+  name: authentik-ldap-wifi
 spec:
   podSelector:
     matchLabels:
-      app.kubernetes.io/name: authentik-radius
+      app.kubernetes.io/name: authentik-ldap-wifi
   policyTypes:
     - Ingress
     - Egress
@@ -18,8 +17,8 @@ spec:
             matchLabels:
               app.kubernetes.io/name: freeradius
       ports:
-        - protocol: UDP
-          port: 1812
+        - protocol: TCP
+          port: 6636
   egress:
     - to:
         - namespaceSelector:

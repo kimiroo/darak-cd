@@ -1,0 +1,9 @@
+# The device registry has its own PostgreSQL cluster in its own namespace: it shares nothing
+# with authentik's database, neither load nor credentials.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: wifi-db
+  labels:
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted

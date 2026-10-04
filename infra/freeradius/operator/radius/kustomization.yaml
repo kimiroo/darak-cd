@@ -7,14 +7,21 @@ resources:
   - 01-deployment.yaml
   - 02-service.yaml
 
-# NOTE: this Flux Kustomization no longer runs postBuild substitution, but keep
-# FreeRADIUS' own ${...} expansions out of these files anyway. Use $ENV{...}.
+# FreeRADIUS' own ${...} expansions are avoided in these files; use literal paths and $ENV{...}.
 configMapGenerator:
   - name: freeradius-config
     files:
       - clients.conf=config/clients.conf
-      - proxy.conf=config/proxy.conf
       - eap=config/eap
       - sql=config/sql
+      - ldap=config/ldap
       - default=config/site-default
-      - inner-tunnel=config/site-inner-tunnel
+      - check-eap-tls=config/site-check-eap-tls
+  # Public certificates only. wifi-ca.crt is the root of infra/step-ca-wifi (copy, keep in sync),
+  # ldap-ca.crt is the LDAPS certificate that authentik's LDAP outpost serves.
+  - name: freeradius-wifi-ca
+    files:
+      - ca.crt=config/wifi-ca.crt
+  - name: freeradius-ldap-wifi-ca
+    files:
+      - ca.crt=config/ldap-ca.crt
