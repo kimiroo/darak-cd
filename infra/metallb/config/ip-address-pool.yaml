@@ -4,6 +4,8 @@ metadata:
   name: k3s-lb-pool
   namespace: metallb-system
 spec:
+  # A CIDR pool otherwise hands out the network address (.0) and the broadcast address (.255)
+  avoidBuggyIPs: true
   addresses:
     - 10.45.10.0/24
     - fdab:d9c3:fb50:45:10::/80
