@@ -8,8 +8,8 @@ spec:
   path: ./infra/freeradius/operator
   prune: true
   wait: true
+  # authentik-operator dependency removed to avoid a circular dependency
   dependsOn:
-    - name: authentik-operator
     - name: cert-manager-issuer
     - name: metallb-config
     - name: reloader-operator
