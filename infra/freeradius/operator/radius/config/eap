@@ -19,8 +19,10 @@ eap {
         tls_min_version = "1.2"
         tls_max_version = "1.2"
 
-        # The certificate CN must equal the EAP identity the device announced.
-        check_cert_cn = %{User-Name}
+        # The EAP identity is sent in the clear and is not used for anything: the device is identified by the
+        # CN of its certificate (the registry key). So the phone can announce any identity, the same
+        # harmless string on every device, and nothing about the user or the device leaks through it.
+        # (check_cert_cn = %{User-Name} would force every phone to type its UUID.)
     }
 
     tls {
