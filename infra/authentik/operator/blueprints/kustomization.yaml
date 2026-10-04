@@ -8,6 +8,6 @@ generatorOptions:
   disableNameSuffixHash: true
 
 configMapGenerator:
-  - name: authentik-blueprint-radius
+  - name: authentik-blueprint-ldap-wifi
     files:
-      - radius.yaml
+      - ldap-wifi.yaml

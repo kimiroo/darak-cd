@@ -1,0 +1,115 @@
+version: 1
+metadata:
+  name: LDAP (FreeRADIUS lookups)
+  labels:
+    blueprints.goauthentik.io/instantiate: "true"
+entries:
+  # The stages reused below come from the default blueprint, so make sure it ran first.
+  - model: authentik_blueprints.metaapplyblueprint
+    attrs:
+      identifiers:
+        name: Default - Authentication flow
+      required: false
+
+  # Flow the LDAP outpost runs for a bind. Only an outpost may run it: a browser gets
+  # "flow does not apply", so the bind account's token cannot be used for a web login.
+  - model: authentik_flows.flow
+    id: flow
+    identifiers:
+      slug: ldap-wifi-bind-flow
+    attrs:
+      name: LDAP bind
+      title: LDAP bind
+      designation: authentication
+      authentication: require_outpost
+  - model: authentik_flows.flowstagebinding
+    identifiers:
+      order: 10
+      target: !KeyOf flow
+      stage: !Find [authentik_stages_identification.identificationstage, [name, default-authentication-identification]]
+  # App-password tokens only: the bind account authenticates with its token, never a password.
+  - model: authentik_stages_password.passwordstage
+    id: password
+    identifiers:
+      name: ldap-wifi-bind-password
+    attrs:
+      backends:
+        - authentik.core.auth.TokenBackend
+  - model: authentik_flows.flowstagebinding
+    identifiers:
+      order: 20
+      target: !KeyOf flow
+      stage: !KeyOf password
+  - model: authentik_flows.flowstagebinding
+    identifiers:
+      order: 100
+      target: !KeyOf flow
+      stage: !Find [authentik_stages_user_login.userloginstage, [name, default-authentication-login]]
+
+  # certificate: the dedicated LDAPS certificate. It is the Secret authentik-ldap-wifi-cert (SOPS), mounted
+  # into the worker at /certs/darak-ldap-wifi and imported by authentik's certificate discovery (hourly)
+  # under the name darak-ldap-wifi. If this blueprint was applied before the first discovery run, the
+  # provider has no certificate yet: run the discovery and apply the blueprint again once.
+  # For LDAP the field labelled "Bind flow" in the admin UI is authorization_flow.
+  # Service account FreeRADIUS binds with. Its bind password is a fixed app-password token whose value comes
+  # from the Secret authentik-ldap-wifi-search (env LDAP_WIFI_SEARCH_TOKEN of the worker). The same value is stored in
+  # freeradius/freeradius-ldap-wifi, which is where the FreeRADIUS Pod reads it.
+  - model: authentik_core.user
+    id: svc
+    identifiers:
+      username: ldap-wifi-search
+    attrs:
+      name: LDAP search (FreeRADIUS)
+      type: service_account
+      path: goauthentik.io/service-accounts
+      is_active: true
+
+  - model: authentik_core.token
+    identifiers:
+      identifier: ldap-wifi-search-bind
+    attrs:
+      user: !KeyOf svc
+      intent: app_password
+      expiring: false
+      key: !Env LDAP_WIFI_SEARCH_TOKEN
+
+  - model: authentik_providers_ldap.ldapprovider
+    id: provider
+    identifiers:
+      name: ldap-wifi
+    attrs:
+      authorization_flow: !KeyOf flow
+      invalidation_flow: !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
+      base_dn: dc=ldap,dc=goauthentik,dc=io
+      # Ask authentik on every lookup: a disabled user must stop working immediately
+      search_mode: direct
+      bind_mode: direct
+      mfa_support: false
+      # uidNumber = user pk + uid_start_number. The registry stores uidNumber, never change this.
+      uid_start_number: 2000
+      gid_start_number: 4000
+      certificate: !Find [authentik_crypto.certificatekeypair, [name, darak-ldap-wifi]]
+    # lets the service account search the whole directory (not only itself)
+    permissions:
+      - permission: authentik_providers_ldap.search_full_directory
+        user: !KeyOf svc
+
+  - model: authentik_core.application
+    identifiers:
+      slug: ldap-wifi
+    attrs:
+      name: LDAP (FreeRADIUS)
+      provider: !KeyOf provider
+      meta_hide: true
+
+  # Not auto-deployed (no service connection): the outpost Deployment lives in infra/freeradius.
+  - model: authentik_outposts.outpost
+    identifiers:
+      name: ldap-wifi
+    attrs:
+      type: ldap
+      # Required by the API; the outpost gets its host from AUTHENTIK_HOST, this only mirrors it.
+      config:
+        authentik_host: http://authentik-server.authentik.svc
+      providers:
+        - !KeyOf provider

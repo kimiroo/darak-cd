@@ -30,6 +30,24 @@ worker:
       cpu: "1000m"
       memory: "1Gi"
 
+  # Only the worker mounts the LDAPS certificate: its certificate discovery (hourly, :24) imports
+  # every tls.crt/tls.key pair below /certs as a certificate named after the directory, here darak-ldap-wifi.
+  # The Secret comes from darak-cd-secrets (SOPS).
+  env:
+    - name: LDAP_WIFI_SEARCH_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: authentik-ldap-wifi-search
+          key: token
+  volumes:
+    - name: ldap-wifi-cert
+      secret:
+        secretName: authentik-ldap-wifi-cert
+  volumeMounts:
+    - name: ldap-wifi-cert
+      mountPath: /certs/darak-ldap-wifi
+      readOnly: true
+
 postgresql:
   enabled: false
 
@@ -39,4 +57,4 @@ prometheus:
 
 blueprints:
   configMaps:
-    - authentik-blueprint-radius
+    - authentik-blueprint-ldap-wifi
