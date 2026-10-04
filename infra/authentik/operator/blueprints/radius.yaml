@@ -96,8 +96,9 @@ entries:
     identifiers:
       name: freeradius
     attrs:
-      authentication_flow: !KeyOf flow
-      authorization_flow: !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
+      # For RADIUS the outpost authenticates users with the *authorization* flow
+      # (the admin UI labels this field "Authentication flow").
+      authorization_flow: !KeyOf flow
       invalidation_flow: !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
       mfa_support: false
       property_mappings:
