@@ -1,0 +1,12 @@
+reloader:
+  # Only workloads carrying a reloader.stakater.com/* annotation are touched
+  autoReloadAll: false
+  watchGlobally: true
+  deployment:
+    resources:
+      requests:
+        cpu: 25m
+        memory: 64Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi

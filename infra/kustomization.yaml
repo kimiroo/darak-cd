@@ -12,6 +12,7 @@ resources:
   - metallb
   - network-policy
   - networking
+  - reloader
   - step-ca
   - step-issuer
   - vector
