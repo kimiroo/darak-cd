@@ -1,0 +1,37 @@
+# authentik RADIUS outpost: reachable only from FreeRADIUS, talks only to the
+# authentik server (API + websocket). Nothing else, so an escaped pod has no
+# route to the rest of the cluster.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: authentik-radius
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: authentik-radius
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: freeradius
+      ports:
+        - protocol: UDP
+          port: 1812
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: authentik
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: authentik
+              app.kubernetes.io/component: server
+      ports:
+        # authentik-server svc 80/443 -> container 9000/9443 (post-DNAT)
+        - protocol: TCP
+          port: 9000
+        - protocol: TCP
+          port: 9443

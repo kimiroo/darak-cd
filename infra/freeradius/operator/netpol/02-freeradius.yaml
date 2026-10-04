@@ -1,0 +1,34 @@
+# FreeRADIUS: reachable only from the OpenWrt APs (.10 and .20), talks only to the outpost.
+# Source IP is preserved because the Service uses externalTrafficPolicy: Local.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: freeradius
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: freeradius
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - ipBlock:
+            cidr: 10.5.0.10/32
+        - ipBlock:
+            cidr: fdab:d9c3:fb50:5::10/128
+        - ipBlock:
+            cidr: 10.5.0.20/32
+        - ipBlock:
+            cidr: fdab:d9c3:fb50:5::20/128
+      ports:
+        - protocol: UDP
+          port: 1812
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: authentik-radius
+      ports:
+        - protocol: UDP
+          port: 1812

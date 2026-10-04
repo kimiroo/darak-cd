@@ -1,0 +1,54 @@
+# Manually deployed outpost (not the authentik-managed Kubernetes integration),
+# so the whole thing stays in Git. Image tag must match the authentik server version.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authentik-radius
+  annotations:
+    secret.reloader.stakater.com/reload: authentik-radius-outpost
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: authentik-radius
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: authentik-radius
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: radius
+          image: ghcr.io/goauthentik/radius:2026.8.3
+          ports:
+            - name: radius
+              containerPort: 1812
+              protocol: UDP
+          env:
+            - name: AUTHENTIK_HOST
+              value: http://authentik-server.authentik.svc
+            - name: AUTHENTIK_INSECURE
+              value: "false"
+            - name: AUTHENTIK_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: authentik-radius-outpost
+                  key: token
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              cpu: 250m
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
