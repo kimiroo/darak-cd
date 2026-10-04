@@ -5,6 +5,12 @@ server default {
         port = 1812
     }
 
+    listen {
+        type = auth
+        ipv6addr = ::
+        port = 1812
+    }
+
     authorize {
         filter_username
         preprocess

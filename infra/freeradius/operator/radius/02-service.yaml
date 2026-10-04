@@ -2,8 +2,16 @@ apiVersion: v1
 kind: Service
 metadata:
   name: freeradius
+  annotations:
+    # The address OpenWrt points at, so it must not change
+    metallb.io/loadBalancerIPs: '10.45.10.110,fdab:d9c3:fb50:45:10::110'
 spec:
   type: LoadBalancer
+  # Same as the Envoy LB: the APs have both IPv4 and IPv6 addresses
+  ipFamilyPolicy: RequireDualStack
+  ipFamilies:
+    - IPv4
+    - IPv6
   # Local keeps the real AP source IP, which the NetworkPolicy and
   # clients.conf both rely on.
   externalTrafficPolicy: Local
