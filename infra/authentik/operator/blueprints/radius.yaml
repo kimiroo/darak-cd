@@ -119,7 +119,9 @@ entries:
       name: freeradius
     attrs:
       type: radius
-      # required by the API; the outpost is deployed by hand, so nothing is read from it
-      config: {}
+      # Required by the API. The outpost is deployed by hand and gets its host from
+      # AUTHENTIK_HOST; this only mirrors it so the admin UI does not warn.
+      config:
+        authentik_host: http://authentik-server.authentik.svc
       providers:
         - !KeyOf provider
