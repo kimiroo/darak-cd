@@ -16,7 +16,10 @@ eap {
         tls = tls-common
         default_eap_type = md5
         copy_request_to_tunnel = no
-        use_tunneled_reply = no
+        # The proxied reply of authentik carries the user uuid (Class) and the VLAN
+        # (Tunnel-*). The registry check in the default server's post-auth and the AP's
+        # VLAN assignment need them in the outer reply, which this copies them to.
+        use_tunneled_reply = yes
         virtual_server = "inner-tunnel"
     }
 }
