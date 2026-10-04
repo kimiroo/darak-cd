@@ -5,6 +5,7 @@ resources:
   - alertmanager
   - authentik
   - cert-manager
+  - cloudflare-ddns
   - cloudnative-pg
   - envoy-gateway
   - grafana

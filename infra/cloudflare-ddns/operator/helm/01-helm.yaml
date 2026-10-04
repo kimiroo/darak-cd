@@ -1,0 +1,20 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: cloudflare-ddns
+  namespace: cloudflare-ddns
+spec:
+  interval: 10m
+  chartRef:
+    kind: OCIRepository
+    name: cloudflare-ddns
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+      remediateLastFailure: true
+  valuesFrom:
+    - kind: ConfigMap
+      name: cloudflare-ddns-helm-values

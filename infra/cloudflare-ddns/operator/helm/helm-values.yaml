@@ -1,0 +1,57 @@
+replicaCount: 1
+hostNetwork: true
+
+cloudflare:
+  existingSecret: cloudflare-api-key
+  existingSecretKey: token
+
+domains: "home.darak.dev"
+ip4Domains: ""
+ip6Domains: ""
+
+ip4Provider: "cloudflare.trace"
+ip6Provider: "cloudflare.trace"
+
+updateCron: "@every 30s"
+updateOnStart: true
+deleteOnStop: false
+
+ttl: 60
+proxied: "false"
+recordComment: ""
+managedRecordsCommentRegex: ""
+
+wafLists: ""
+
+# Inject from Secret via extraEnv
+shoutrrr: ""
+
+healthchecks: ""
+uptimeKuma: ""
+
+detectionTimeout: "10s"
+updateTimeout: "30s"
+
+emoji: false
+quiet: false
+
+resources:
+  limits:
+    memory: 32Mi
+    cpu: 50m
+
+extraEnv:
+  - name: SHOUTRRR
+    valueFrom:
+      secretKeyRef:
+        name: shoutrrr
+        key: url
+  - name: REJECT_CLOUDFLARE_IPS
+    value: "true"
+  - name: DELETE_ON_FAILURE
+    value: "false"
+
+podAnnotations: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
