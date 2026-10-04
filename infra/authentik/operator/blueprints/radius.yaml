@@ -66,7 +66,6 @@ entries:
             "Admin": 20,
             "Family": 30,
             "Trusted Guest": 70,
-            "IoT": 80,
             "Guest": 90,
             "Limbo": 99
         }

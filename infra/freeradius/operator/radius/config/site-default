@@ -23,6 +23,14 @@ server default {
         eap
     }
 
+    # The inner tunnel is proxied to authentik. When its reply comes back the eap
+    # module must finish the EAP-TTLS exchange: it builds the EAP-Success and the
+    # MS-MPPE keys the AP needs for the 4-way handshake. Without this the Accept
+    # carries only authentik's attributes and the client never gets connected.
+    post-proxy {
+        eap
+    }
+
     post-auth {
         # Device registry. This runs once authentik has accepted the user. The proxied
         # reply carries the user uuid in Class, and the AP's own Calling-Station-Id is
