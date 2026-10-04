@@ -119,5 +119,7 @@ entries:
       name: freeradius
     attrs:
       type: radius
+      # required by the API; the outpost is deployed by hand, so nothing is read from it
+      config: {}
       providers:
         - !KeyOf provider
