@@ -1,0 +1,16 @@
+# The inner PAP request is forwarded to the authentik RADIUS outpost, which owns
+# users, passwords and MFA. FreeRADIUS holds no credentials.
+server inner-tunnel {
+    authorize {
+        filter_username
+        update control {
+            Proxy-To-Realm := "authentik"
+        }
+    }
+
+    authenticate {
+    }
+
+    post-auth {
+    }
+}

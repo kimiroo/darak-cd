@@ -1,0 +1,27 @@
+server default {
+    listen {
+        type = auth
+        ipaddr = *
+        port = 1812
+    }
+
+    authorize {
+        filter_username
+        preprocess
+        eap {
+            ok = return
+        }
+    }
+
+    authenticate {
+        eap
+    }
+
+    post-auth {
+        Post-Auth-Type REJECT {
+            attr_filter.access_reject
+            eap
+            remove_reply_message_if_eap
+        }
+    }
+}

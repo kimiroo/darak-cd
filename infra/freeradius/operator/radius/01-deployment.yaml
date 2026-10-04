@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: freeradius
+  annotations:
+    # cert-manager renews the cert Secret in place; FreeRADIUS only reads it at start
+    secret.reloader.stakater.com/reload: freeradius-cert-tls,freeradius-secrets
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: freeradius
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: freeradius
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        runAsGroup: 101
+        fsGroup: 101
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: freeradius
+          image: freeradius/freeradius-server:3.2.10
+          command: ["freeradius"]
+          args: ["-f", "-l", "stdout"]
+          ports:
+            - name: auth
+              containerPort: 1812
+              protocol: UDP
+          env:
+            - name: OPENWRT_RADIUS_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: freeradius-secrets
+                  key: openwrt_secret
+            - name: AUTHENTIK_RADIUS_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: freeradius-secrets
+                  key: authentik_secret
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: config
+              mountPath: /etc/freeradius/clients.conf
+              subPath: clients.conf
+              readOnly: true
+            - name: config
+              mountPath: /etc/freeradius/proxy.conf
+              subPath: proxy.conf
+              readOnly: true
+            - name: config
+              mountPath: /etc/freeradius/mods-available/eap
+              subPath: eap
+              readOnly: true
+            - name: config
+              mountPath: /etc/freeradius/sites-available/default
+              subPath: default
+              readOnly: true
+            - name: config
+              mountPath: /etc/freeradius/sites-available/inner-tunnel
+              subPath: inner-tunnel
+              readOnly: true
+            - name: tls
+              mountPath: /etc/freeradius/certs
+              readOnly: true
+            - name: run
+              mountPath: /var/run/freeradius
+            - name: log
+              mountPath: /var/log/freeradius
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: config
+          configMap:
+            name: freeradius-config
+        - name: tls
+          secret:
+            secretName: freeradius-cert-tls
+            defaultMode: 0440
+        - name: run
+          emptyDir: {}
+        - name: log
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}

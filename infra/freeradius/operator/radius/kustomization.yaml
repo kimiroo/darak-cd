@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: freeradius
+
+resources:
+  - 00-certificate.yaml
+  - 01-deployment.yaml
+  - 02-service.yaml
+
+# NOTE: this Flux Kustomization no longer runs postBuild substitution, but keep
+# FreeRADIUS' own ${...} expansions out of these files anyway. Use $ENV{...}.
+configMapGenerator:
+  - name: freeradius-config
+    files:
+      - clients.conf=config/clients.conf
+      - proxy.conf=config/proxy.conf
+      - eap=config/eap
+      - default=config/site-default
+      - inner-tunnel=config/site-inner-tunnel

@@ -1,0 +1,16 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: freeradius-cert
+spec:
+  secretName: freeradius-cert-tls
+  issuerRef:
+    name: gts-prod
+    kind: ClusterIssuer
+  commonName: 'radius.darak.dev'
+  dnsNames:
+    - 'radius.darak.dev'
+  privateKey:
+    algorithm: ECDSA
+    # P-256 for the widest supplicant compatibility (EAP clients are pickier than browsers)
+    size: 256
